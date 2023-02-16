@@ -1,0 +1,38 @@
+.form-label {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.dropzone {
+    border: 2px dashed #dee2e6;
+    background: var(--ct-input-bg);
+    border-radius: 6px;
+    cursor: pointer;
+    min-height: 150px;
+    padding: 20px;
+}
+
+#tenproject:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    color: #0056b3 !important;
+}
+
+#tenproject {
+    word-break: break-all;
+}
+
+.card_list {
+    position: relative;
+    width: 100%;
+    padding-right: 7px;
+    padding-left: 15px;
+}
+
+
+@media (min-width: 576px) {
+    .card_list {
+        flex: 0 0 25%;
+        max-width: 20%;
+    }
+}

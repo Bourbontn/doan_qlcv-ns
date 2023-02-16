@@ -1,0 +1,216 @@
+<div class="intro-y" *ngIf="!state">
+    <!-- start page title -->
+    <div class="row mb-1 px-3">
+        <div>
+            <h5 class="page-title intro-x mb-3">Danh sách công việc</h5>
+            <a class="p-2" (click)="state = !state"><i class="pi pi-plus"></i>
+                Tạo mới công việc</a>
+        </div>
+        <div class="my-0 ml-auto mr-3">
+            <span class="p-input-icon-right mr-2">
+                <i class="pi pi-search"></i>
+                <input placeholder="Tìm kiếm công việc" type="text" pInputText [(ngModel)]="search"
+                    (ngModelChange)="searchData()" />
+            </span>
+            <p-dropdown [options]="dropdown" placeholder="Tình trạng" optionLabel="name" optionValue="value"
+                [showClear]="true" ></p-dropdown>
+        </div>
+    </div>
+    <!-- end page title -->
+    <div class="row pr-3">
+        <div class="card_list my-3" *ngFor="let qlcv of data">
+            <!-- project card -->
+            <div class="card border-0">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div id="tenproject" (click)="toDetails(qlcv)"
+                            class="capitalize mt-2 my-2 w-10 text-primary text-2xl white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                            {{qlcv.tenproject}}
+                        </div>
+                        <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
+                            class="border-0 bg-transparent  my-0 ml-auto px-4"></button>
+                        <mat-menu #beforeMenu="matMenu" xPosition="before">
+                            <button mat-menu-item (click)="toDetails(qlcv)">
+                                <mat-icon>edit</mat-icon>
+                                <span>Chi tiết</span>
+                            </button>
+                            <button mat-menu-item (click)="btnDelete(qlcv)">
+                                <mat-icon>delete</mat-icon>Xoá
+                            </button>
+                        </mat-menu>
+                    </div>
+                    <div class="p-1 text-lg white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                        style="width: 82%">Phòng ban: <span class="font-medium">{{qlcv.phongban}}</span>
+                    </div>
+                    <h6 class="p-1 text-sm mt-2"> Ngày bắt đầu: <span>{{qlcv.date_start | date: " dd/MM/yyyy"}}</span>
+                    </h6>
+                    <h6 class="p-1 text-sm mt-2"> Ngày kết thúc: {{qlcv.date_end | date: " dd/MM/yyyy"}}</h6>
+                    <div class="my-2 ost-label__inner text-white text-center p-2" [ngClass]="qlcv['bg_trangthai']">
+                        {{qlcv['trangthai_label']}}</div>
+                    <div class="my-2 text-base white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                        {{qlcv.tongquan}}
+                    </div>
+                    <p class="mb-5">
+                        <span class="pr-2">
+                            <i class="pi pi-list pr-2"></i>
+                            <b>5</b> Nhiệm vụ
+                        </span>
+                        <span class="pr-2">
+                            <i class="pi pi-comments pr-2"></i>
+                            <b>741</b> Bình luận
+                        </span>
+                    </p>
+                    <div id="tooltip-container">
+                        <a href="" class="inline-block p-1" aria-label="Mat Helme">
+                            <img src="assets/images/a_none.jpg" class="rounded-circle avatar-xs" alt="friend"
+                                width="30px">
+                        </a>
+
+                        <a href="" class="inline-block p-1" aria-label="Michael Zenaty">
+                            <img src="assets/images/a_none.jpg" class="rounded-circle avatar-xs" alt="friend"
+                                width="30px">
+                        </a>
+
+                        <a href="" class="inline-block p-1" aria-label="James Anderson">
+                            <img src="assets/images/a_none.jpg" class="rounded-circle avatar-xs" alt="friend"
+                                width="30px">
+                        </a>
+                        <a href="" class="inline-block">
+                            +7 nữa
+                        </a>
+                    </div>
+                </div> 
+            </div> 
+            <!-- end card-->
+        </div>
+    </div>
+
+    <mat-paginator  (page)="changesPage($event)" [pageIndex]="pageIndex"  [length]="pageNumber"
+        [pageSize]="pageSize" hidePageSize showFirstLastButtons aria-label="Select page">
+    </mat-paginator>
+</div>
+
+<div class="container-fluid intro-y" *ngIf="state">
+    <!-- start page title -->
+    <div class="row mb-2">
+        <h5 class="page-title intro-x">Tạo mới công việc</h5>
+    </div>
+    <!-- end page title -->
+    <form action="" [formGroup]="formData">
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="mb-3 mt-3 mt-xl-0">
+                                    <label for="projectname" class="form-label">Tên công việc</label>
+                                    <input type="text" id="projectname" class="form-control"
+                                        placeholder="Nhập tên công việc" formControlName="tenproject">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="project-overview" class="form-label">Tổng quan công việc</label>
+                                    <textarea class="form-control" id="project-overview" rows="5"
+                                        placeholder="Mô tả về công việc....." formControlName="tongquan"></textarea>
+                                </div>
+                                <div class="mb-3 mr-5 inline-block">
+                                    <label class="form-label">Ngày bắt đầu</label>
+                                    <br>
+                                    <p-calendar class="form" placeholder="dd/MM/yyyy" [showIcon]="true" inputId="icon"
+                                        [showTime]="false" dataType="date" dateFormat="dd/mm/yy"
+                                        formControlName="date_start"></p-calendar>
+                                </div>
+                                <div class="mb-3 inline-block">
+                                    <label class="form-label">Ngày kết thúc</label>
+                                    <br>
+                                    <p-calendar class="form" placeholder="dd/MM/yyyy" [showIcon]="true" inputId="icon"
+                                        [showTime]="false" dataType="date" dateFormat="dd/mm/yy"
+                                        formControlName="date_end"></p-calendar>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label for="project-overview" class="form-label">Phòng ban</label>
+                                    <br>
+                                    <p-dropdown [options]="dmpb" optionValue="ten_phongban" optionLabel="ten_phongban"
+                                        placeholder="Tuỳ chọn" formControlName="phongban"
+                                        [style]="{'minWidth': '40%'}"></p-dropdown>
+
+                                </div>
+                            </div> 
+                            <!-- end col-->
+
+                            <div class="col-xl-6">
+                                <div class="mb-3 mt-3 mt-xl-0" [class.ovic-is-loading]="fileUploading">
+                                    <label for="projectname" class="form-label mb-0">File</label>
+                                    <p class="text-muted font-14">Kích thước hình thu nhỏ đề xuất 18mb</p>
+                                    <form class="dropzone">
+                                        <div class="text-align-center mb-2">
+                                            <i class="pi pi-cloud-upload text-xl"></i>
+                                            Thả tập tin ở đây hoặc bấm vào để tải lên.
+                                        </div>
+                                        <button (click)="myUploader()" class="btn btn-primary mb-3"><i
+                                                class="pi pi-upload"></i> Upload</button>
+                                        <input class="d-none " #fileChooser type="file" multiple="true"
+                                            (change)="fileChanges($event)">
+                                        <br>
+                                        <div class="onShowFile flex justify-content-between"
+                                            *ngFor="let files of fileUploaded">
+                                            <div class="">
+                                                <label class="txt-label align-items-center">{{files.title}}</label>
+                                            </div>
+                                            <div class="inline">
+                                                <button pButton pRipple type="button" icon="pi pi-times"
+                                                    (click)="deleteFile(files)"
+                                                    class="p-button-rounded p-button-danger p-button-text"></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="dropzone-previews mt-3" id="file-previews"></div>
+                                    <div class="d-none" id="uploadPreviewTemplate">
+                                        <div class="card mt-1 mb-0 shadow-none border">
+                                            <div class="p-2">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <img data-dz-thumbnail="" src="#"
+                                                            class="avatar-sm rounded bg-light" alt="">
+                                                    </div>
+                                                    <div class="col ps-0">
+                                                        <a href="javascript:void(0);" class="text-muted fw-bold"
+                                                            data-dz-name=""></a>
+                                                        <p class="mb-0" data-dz-size=""></p>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <!-- Button -->
+                                                        <a href="" class="btn btn-link btn-lg text-muted"
+                                                            data-dz-remove="">
+                                                            <i class="ri-close-line"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end file preview template -->
+                                </div>
+                                <!-- Date View -->
+                            </div>
+                             <!-- end col-->
+                        </div>
+                        <!-- end row -->
+                    </div>
+                     <!-- end card-body -->
+                </div>
+                 <!-- end card-->
+            </div> 
+            <!-- end col-->
+        </div>
+    </form>
+    <div class="row justify-content-end px-4 py-2">
+        <button (click)="state = !state" pButton pRipple icon="pi pi-times" type="button" label="Huỷ"
+            class="p-button-warning mr-2"></button>
+        <button (click)="submitForm()" pButton pRipple icon="pi pi-send" type="button" label="Lưu"
+            class="p-button-success" [disabled]="formData.invalid"></button>
+    </div>
+    <!-- end row-->
+</div>

@@ -1,0 +1,17 @@
+.page-aside-left {
+    width: 240px;
+    float: left;
+    padding: 0 20px 20px 10px;
+    position: relative;
+}
+.page-aside-right{
+    margin: -1.5rem 0 -1.5rem 250px;
+    border-left: 5px solid var(--ct-body-bg);
+    padding: 1.5rem 0 1.5rem 25px;
+}
+.email-menu-list a {
+    color: var(--ct-gray-700);
+    padding: 12px 5px;
+    display: block;
+    font-size: 15px;
+}

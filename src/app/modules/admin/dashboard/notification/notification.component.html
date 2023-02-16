@@ -1,0 +1,45 @@
+<div class="admin-menu-language-box position-relative" #overlayAnchor>
+    <button pButton pRipple type="button" class="admin-menu-notification-box__btn p-button-rounded p-button-secondary p-button-text"
+        (click)="panel.toggle($event)">
+        <i class="pi pi-bell p-text-secondary text-white" pBadge style="font-size: 1.5rem" value="2"
+            severity="danger"></i>
+    </button>
+</div>
+<p-overlayPanel #panel styleClass="top-bar__overlay-panel --append-to-overlay-anchor" [appendTo]="overlayAnchor">
+    <div class="top-bar__vertical-menu__head">
+        <div class="flex">
+            <h5>Thông báo</h5>
+            <a  class="ml-auto mt-3" href="">đọc tất cả</a>
+        </div>
+    </div>
+    <div class="list-group list-group-flush border-bottom scrollarea">
+        <a href="#" class="list-group-item list-group-item-action active py-3 lh-sm" aria-current="true">
+          <div class="d-flex w-100 align-items-center justify-content-between mb-2">
+            <strong class="mb-1">Quản Lý Công Việc</strong>
+            <small>Wed</small>
+          </div>
+          <div class="col-10 mb-1 small white-space-nowrap overflow-hidden text-overflow-ellipsis">Mô tả về quản lý công việc trong tương lai cũng như dự định sắp tới</div>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action py-3 lh-sm">
+          <div class="d-flex w-100 align-items-center justify-content-between mb-2">
+            <strong class="mb-1">List group item heading</strong>
+            <small class="text-muted">Tues</small>
+          </div>
+          <div class="col-10 mb-1 small white-space-nowrap overflow-hidden text-overflow-ellipsis">Some placeholder content in a paragraph below the heading and date.</div>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action py-3 lh-sm">
+          <div class="d-flex w-100 align-items-center justify-content-between mb-2">
+            <strong class="mb-1">List group item heading</strong>
+            <small class="text-muted">Tues</small>
+          </div>
+          <div class="col-10 mb-1 small white-space-nowrap overflow-hidden text-overflow-ellipsis">Some placeholder content in a paragraph below the heading and date.</div>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action py-3 lh-sm">
+          <div class="d-flex w-100 align-items-center justify-content-between mb-2">
+            <strong class="mb-1">List group item heading</strong>
+            <small class="text-muted">Tues</small>
+          </div>
+          <div class="col-10 mb-1 small white-space-nowrap overflow-hidden text-overflow-ellipsis">Some placeholder content in a paragraph below the heading and date.</div>
+        </a>
+    </div>
+</p-overlayPanel>

@@ -1,0 +1,154 @@
+<div class="intro-y">
+  <div class="row px-3">
+    <h5 class="page-title intro-x mb-3"> Danh sách yêu cầu </h5>
+    <div class="ml-auto">
+      <span class="p-input-icon-right mr-2">
+        <i class="pi pi-search"></i>
+        <input placeholder="Tìm kiếm yêu cầu" type="text" pInputText [(ngModel)]="search"
+          (ngModelChange)="searchData()" />
+      </span>
+      <p-dropdown [options]="trangthai" (onChange)="filterRequset($event)" placeholder="Trạng thái" [showClear]="true">
+      </p-dropdown>
+    </div>
+  </div>
+  <div class="row px-3">
+    <a class="p-2" (click)="btnAdd()"><i class="pi pi-plus"></i>
+      Tạo mới yêu cầu</a>
+    <!-- <button pButton pRipple class="h-2rem p-button-outlined" label="Tạo mới" styleClass="p-button-link"
+        icon="pi pi-plus" (click)="btnAdd()"></button> -->
+    <!-- <button *ngIf="!selectAll" pButton pRipple type="button" label="Phê duyệt tất cả"
+      class="h-2rem mt-3 ml-2 p-button-success" icon="pi pi-check" iconPos="right"></button> -->
+    <div class="ml-auto my-2">
+      <button [disabled]="dataSelection && dataSelection.length? false: true" pButton pRipple type="button"
+        label="Phê duyệt" class="h-2rem  ml-2 p-button-success" icon="pi pi-check" iconPos="right"
+        (click)="approve()"></button>
+      <button [disabled]="dataSelection && dataSelection.length? false: true" pButton pRipple type="button"
+        label="Huỷ duyệt" class="h-2rem  ml-2 p-button-danger" icon="pi pi-times" iconPos="right"
+        (click)="backApprove()"></button>
+    </div>
+  </div>
+
+    <!-- start table here -->
+  <div>
+    <p-table #dt [value]="data_yeucau" selectionMode="multiple" [(selection)]="dataSelection"
+      styleClass="p-datatable-customers" [selectionPageOnly]="true" [rowHover]="true" [rows]="11" [paginator]="true">
+      <ng-template pTemplate="header">
+        <tr >
+          <th class="table_request" style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+          <th class="table_request" style="width: 3rem"></th>
+          <th class="table_request" pSortableColumn="tendexuat">Tên đề xuất </th>
+          <th class="table_request" pSortableColumn="nguoidexuat">Người đề xuất </th>
+          <th class="table_request" pSortableColumn="phongban">Phòng ban </th>
+          <th class="table_request" pSortableColumn="ngaydexuat">Ngày đề xuất</th>
+          <!-- <th pSortableColumn="trangthai">Trạng thái </th> -->
+          <th class="table_request" pSortableColumn="trangthai"> Trạng thái</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-yeucau>
+        <tr class="p-selectable-row">
+          <td>
+            <p-tableCheckbox [value]="yeucau"></p-tableCheckbox>
+          </td>
+          <td>
+            <button pButton pRipple type="button" icon="pi pi-file-edit" (click)="btnEdit(yeucau)"
+              class="p-button-rounded p-button-text p-button-plain"></button>
+          </td>
+          <!-- <td> -->
+          <!-- <span class="p-column-title">Petitioner</span> -->
+          <!-- <span class="">{{request.id}}</span> -->
+          <!-- </td> -->
+          <td class="capitalize">
+            <!-- <span class="p-column-title">Name</span> -->
+            {{yeucau.tendexuat}}
+          </td>
+          <td>
+            <!-- <span class="p-column-title">Petitioner</span> -->
+            <span class="capitalize">{{yeucau.nguoidexuat}}</span>
+          </td>
+          <td>
+            <!-- <span class="p-column-title">Department</span> -->
+            <span class="">{{yeucau.phongban}}</span>
+          </td>
+          <td>
+            <!-- <span class="p-column-title">Date</span> -->
+            {{yeucau.ngaydexuat | date: "dd/MM/yyyy" }}
+          </td>
+          <!-- <td> -->
+          <!-- <span class="p-column-title">Status</span> -->
+          <!-- <span class="p-1 text-center text-white border-round-lg" [class]="'customer-badge status-' + request.trangthai ">{{request.trangthai}}</span>
+       </td> -->
+          <td>
+            <!-- <span class="p-column-title">Status</span> border-round-lg -->
+            <span class="p-2 text-center text-white border-round-md" [ngClass]="yeucau['bg_trangthai']">
+              {{yeucau['trangthai_label']}}</span>
+          </td>
+
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8">No customers found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- end table -->
+  </div>
+
+  <ng-template #nsFormEdit let-c="close">
+    <div class="model-header container mt-3">
+      <h4 class="modal-title">{{formState.formTitle}}</h4>
+    </div>
+    <div class="modal-body ovic-modal-body">
+      <form action="" [formGroup]="formData">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="mb-3 mt-3 mt-xl-0">
+              <label for="projectname" class="form-label text-xl">Tên đề xuất</label>
+              <input type="text" id="projectname" class="form-control capitalize" placeholder="Nhập tên yêu cầu"
+                formControlName="tendexuat">
+            </div>
+
+            <div class="mb-3">
+              <label for="project-overview" class="form-label text-xl">Người đề xuất</label>
+              <!-- <textarea class="form-control" id="project-overview" rows="5"
+                            placeholder="Enter some brief about project.." formControlName="nguoidexuat"></textarea> -->
+              <!-- <p-editor formControlName="tongquan" placeholder="Mô tả về công việc....."
+                            [style]="{'height':'220px'}"></p-editor> -->
+              <input type="text" id="projectname" class="form-control capitalize" placeholder="Nhập tên người đề xuất"
+                formControlName="nguoidexuat">
+            </div>
+            <div class="mb-0">
+              <label for="project-overview" class="form-label text-xl">Thuộc phòng ban</label>
+              <br>
+              <p-dropdown [options]="dmpb" optionValue="ten_phongban" optionLabel="ten_phongban" placeholder="Tuỳ chọn"
+                formControlName="phongban" [style]="{'minWidth': '40%'}"></p-dropdown>
+            </div>
+            <!-- Date View -->
+            <div class="mb-3 mr-5 inline-block">
+              <label class="form-label text-xl">Ngày đề xuất</label>
+              <br>
+              <!-- <p-calendar class="form" [showIcon]="true" inputId="icon" [showTime]="false" dataType="date"
+                            dateFormat="dd/mm/yy" formControlName="date_start"></p-calendar> -->
+              <input id="input_Formedit" class="form-control" type="date" formControlName="ngaydexuat">
+            </div>
+
+            <!-- <div class="mb-0" hidden *ngIf="">
+              <label for="project-overview" class="form-label text-xl">Trạng thái</label>
+              <br>
+              <p-dropdown [options]="trangthai" optionValue="value" optionLabel="label" placeholder="Tuỳ chọn"
+                formControlName="phongban" [style]="{'minWidth': '40%'}"></p-dropdown>
+            </div> -->
+
+          </div> <!-- end col-->
+        </div>
+        <!-- end row -->
+        <div class="flex mt-2">
+          <button (click)="updateForm()" [disabled]="formData.invalid" pButton pRipple
+            class=" mr-2 max-w-10rem p-button-success" icon="pi pi-save" label="Xác nhận"></button>
+          <button pRipple pButton type="button" class="p-button p-button-danger" icon="pi pi-times"
+            (click)="closeSide()"></button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+</div>
