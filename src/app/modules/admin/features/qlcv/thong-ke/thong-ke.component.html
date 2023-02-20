@@ -1,73 +1,73 @@
 <div class="intro-y">
-    <div class="row px-3 mb-2">
-      <h5 class="page-title intro-x mb-3"> Danh sách công việc </h5>
-      <div class="ml-auto">
-        <span class="p-input-icon-right mr-2">
-          <i class="pi pi-search"></i>
-          <input placeholder="Tìm kiếm yêu cầu" type="text" pInputText />
-        </span>
-        <p-dropdown [options]="" placeholder="Lọc theo giao đoạn" [showClear]="true">
-        </p-dropdown>
-      </div>
-    </div>
-    <!-- start table here -->
-    <div>
-      <p-table #dt [value]="" selectionMode="multiple" [(selection)]="dataSelection"
-        styleClass="p-datatable-customers" [selectionPageOnly]="true" [rowHover]="true" [rows]="11" [paginator]="true">
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="table_cv" style="width: 50%" pSortableColumn="tencongviec">Dự án & công việc</th>
-            <th class="table_cv" style="width: 10%" pSortableColumn="nguoidexuat">Phòng ban</th>
-            <th class="table_cv" style="width: 20%" pSortableColumn="phongban">Thống kê</th>
-            <th class="table_cv" style="width: 10%" pSortableColumn="ngaydexuat">Trạng thái</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-dscv>
-          <tr class="p-selectable-row" >
-            <td class="capitalize">
-              <ul class="list-none p-0 m-0">
-                <li class="font-semibold">
-                  {{dscv.tencongviec}}
-                </li>
-                <li>
-                  {{dscv.chitietcongviec}}
-                </li>
-              </ul>
-            </td>
-            <td>
-              <!-- <span class="p-column-title">Petitioner</span> -->
-              <span class="capitalize"></span>
-              {{dscv.phongban}}
-            </td>
-            <td>
-              <!-- <span class="p-column-title">Department</span> -->
-              <span class="capitalize"></span>
-              <ul class="list-none p-0">
-                <li class="font-semibold">
-                  {{dscv.thongke}} / {{dscv.thongke}} hoàn thành
-                </li>
-                <li>
-                  <p-progressBar [value]="100" [showValue]="false"  [style]="{'height': '0.5rem'}"></p-progressBar>
-                </li>
-              </ul>
-              
-            </td>
-            <td>
-              <!-- <span class="p-column-title">Date</span> -->
-              <span class="capitalize"></span>
-              <div>{{dscv.trangthai}}</div>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="8">No customers found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
-      <!-- end table -->
+  <div class="row px-3 mb-2">
+    <h5 class="page-title intro-x mb-3"> Danh sách công việc </h5>
+    <div class="ml-auto">
+      <span class="p-input-icon-right mr-2">
+        <i class="pi pi-search"></i>
+        <input placeholder="Tìm kiếm yêu cầu" type="text" pInputText />
+      </span>
+      <p-dropdown [options]="" placeholder="Lọc theo giao đoạn" [showClear]="true">
+      </p-dropdown>
     </div>
   </div>
+  <!-- start table here -->
+  <div>
+    <p-table #dt [value]="data_cv" selectionMode="multiple" styleClass="p-datatable-customers"
+      [selectionPageOnly]="true" [rowHover]="true" [rows]="10" [paginator]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="table_cv" style="width: 50%" pSortableColumn="tencongviec">Dự án & công việc</th>
+          <th class="table_cv" style="width: 10%" pSortableColumn="nguoidexuat">Phòng ban</th>
+          <th class="table_cv" style="width: 20%" pSortableColumn="phongban">Thống kê</th>
+          <th class="table_cv" style="width: 10%" pSortableColumn="ngaydexuat">Trạng thái</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-dscv>
+        <tr class="p-selectable-row">
+          <td class="capitalize">
+            <ul class="list-none p-0 m-0">
+              <li class="font-semibold">
+                {{dscv.tenproject}}
+              </li>
+              <li>
+               <span class="text-sm"> {{dscv.tongquan}}</span>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <!-- <span class="p-column-title">Petitioner</span> -->
+            <span class="capitalize"></span>
+            {{dscv.phongban}}
+          </td>
+          <td>
+            <!-- <span class="p-column-title">Department</span> -->
+            <span class="capitalize"></span>
+            <ul class="list-none p-0">
+              <li class="font-semibold flex">
+                <span>{{sumJobs_ht}} / {{sumJobs}} Hoàn thành</span>
+                <span class="ml-auto">{{percentValue}}%</span>
+              </li>
+              <li>
+                <p-progressBar [value]="percentValue" [showValue]="false" 
+                  [style]="{'height': '0.5rem'}"></p-progressBar>
+              </li>
+            </ul>
 
-
-  
+          </td>
+          <td>
+            <!-- <span class="p-column-title">Date</span> -->
+            <span class="capitalize"></span>
+            <div class="my-2 ost-label__inner text-white text-center p-2 border-round-md" [ngClass]="dscv['bg_trangthai']">
+              {{dscv['trangthai_label']}}</div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8">No customers found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- end table -->
+  </div>
+</div>

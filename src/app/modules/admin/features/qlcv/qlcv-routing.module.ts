@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ChiTietCongViecComponent } from './chi-tiet-cong-viec/chi-tiet-cong-viec.component';
 import { DanhSachCongViecComponent } from './danh-sach-cong-viec/danh-sach-cong-viec.component';
 import { TaiLieuComponent } from './tai-lieu/tai-lieu.component';
+import { ThongKeComponent } from './thong-ke/thong-ke.component';
 import { YeuCauComponent } from './yeu-cau/yeu-cau.component';
 
 const routes: Routes = [
@@ -18,6 +19,9 @@ const routes: Routes = [
   {
     path: 'quan-ly-tai-lieu',component: TaiLieuComponent
   },
+  {
+    path:'thong-ke', component: ThongKeComponent
+  }
 ];
 
 @NgModule({

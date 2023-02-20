@@ -1,10 +1,11 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { HelperService } from '@core/services/helper.service';
 import { NotificationService } from '@core/services/notification.service';
 import { chiTietGiaiDoan, giaiDoanCongViec } from '@modules/shared/models/giai-doan-cong-viec';
+import { DsCongViecService } from '@modules/shared/services/ds-cong-viec.service';
 import { GiaiDoanCongViecChiTietService } from '@modules/shared/services/giai-doan-cong-viec-chi-tiet.service';
 import { GiaiDoanCongViecService } from '@modules/shared/services/giai-doan-cong-viec.service';
 import { data } from 'autoprefixer';
@@ -16,19 +17,20 @@ import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
   styleUrls: ['./giai-doan-cong-viec.component.css']
 })
 export class GiaiDoanCongViecComponent implements OnInit {
+
+  @Output() needReloadData = new EventEmitter<string>();
+
   @ViewChild("gdFormEdit") gdFormEdit: TemplateRef<any>;
 
   data_gd: giaiDoanCongViec[];
-  // data_gdBackup: giaiDoanCongViec[];
-  // dataSelection_ctgd: chiTietGiaiDoan[];
   data_ctgd: chiTietGiaiDoan[];
   search: string = '';
-
   param_mcv: string = '';
 
   private OBSERVER_SEARCH_DATA = new Subject<string>();
   constructor(
     private formBuilder: FormBuilder,
+    public dsCongViecService: DsCongViecService,
     private giaiDoanCongViecService: GiaiDoanCongViecService,
     private giaiDoanCongViecChiTietService: GiaiDoanCongViecChiTietService,
     private notificationService: NotificationService,
@@ -53,25 +55,23 @@ export class GiaiDoanCongViecComponent implements OnInit {
     let sttGiaidoan = 0;
     const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
     forkJoin([
+      this.dsCongViecService.list(1, filter),
       this.giaiDoanCongViecService.list(1, filter),
       this.giaiDoanCongViecChiTietService.get_list_CTGD_count(),
     ]).subscribe(
       {
-        next: ([dsGDCV, _count]) => {
+        next: ([dsCV,dsGDCV, _count]) => {
           this.notificationService.isProcessing(false);
           this.data_gd = dsGDCV.map(
             gDoan => {
               gDoan['__sttGiaidoan'] = ++sttGiaidoan;
               gDoan['count_giaidoan'] = _count.filter(m => m.id_giaidoan.toString() === gDoan.id.toString()).length;
               gDoan['data_chitietgiaidoan'] = _count.filter(m => m.id_giaidoan.toString() === gDoan.id.toString());
-              gDoan['count_trangthai'] = _count.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString() ).length;
-              // this.showStatus_date(gDoan['data_chitietgiaidoan']);
+              gDoan['count_trangthai'] = _count.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
               this.showStatus_trangthai(gDoan['data_chitietgiaidoan']);
               return gDoan;
             }
           );
-
-
         },
         error: (err: any) => {
           this.notificationService.isProcessing(false);
@@ -90,7 +90,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
           f['bg_ngayhethan'] = 'work-unfinished';
           f['label_ngayhethan'] = "quá hạn";
           f['bg_trangthai'] = 'work-unfinished';
-          f['label_trangthai'] = 'chưa hoàn thành';
+          f['label_trangthai'] = 'không hoàn thành';
         }
       }
       else {
@@ -104,7 +104,6 @@ export class GiaiDoanCongViecComponent implements OnInit {
     }
     )
   }
-
   //thêm giai đoạn 
   formData: FormGroup = this.formBuilder.group({
     ma_congviec: [''],
@@ -122,9 +121,15 @@ export class GiaiDoanCongViecComponent implements OnInit {
       formTitle: '',
       object: null
     }
+  onOpenFormEdit() {
 
+  }
   btnAddGiaiDoan() {
     this.changeInputMode("add");
+  }
+  btnEditGiaiDoan(object: giaiDoanCongViec) {
+    this.onOpenFormEdit();
+    this.changeInputMode('edit', object);
   }
 
   changeInputMode(formType: 'add' | 'edit', object: giaiDoanCongViec | null = null) {
@@ -159,7 +164,8 @@ export class GiaiDoanCongViecComponent implements OnInit {
                 ma_congviec: this.param_mcv,
                 ten_giaidoan: '',
               }
-            )
+            );
+
           }, error: () => {
             this.notificationService.isProcessing(false);
             this.notificationService.toastError("Thêm thất bại");
@@ -186,6 +192,27 @@ export class GiaiDoanCongViecComponent implements OnInit {
       this.notificationService.toastError("Lỗi chưa nhập tên giai đoạn");
     }
   }
+
+  delete_GD(GD: giaiDoanCongViec) {
+    this.notificationService.isProcessing(true);
+    this.giaiDoanCongViecService.delete(GD.id).subscribe(
+      {
+        next: () => {
+          this.notificationService.isProcessing(false);
+          this.notificationService.toastSuccess('Xoá thành công');
+          this.loadData();
+          this.needReloadData.emit('refresh-data');
+        },
+        error: () => {
+          this.notificationService.isProcessing(false);
+          this.notificationService.toastWarning('Xoá thất bại');
+          
+          
+        }
+      }
+    )
+  }
+
   async btnDelete(data: giaiDoanCongViec) {
     const xacNhanXoa = await this.notificationService.confirmDelete();
     if (xacNhanXoa) {
@@ -224,7 +251,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
       object: null
     }
 
-  onOpenFormEdit() {
+  onOpenFormAddCTGD() {
     this.notificationService.openSideNavigationMenu({
       template: this.gdFormEdit,
       size: 500,
@@ -233,18 +260,18 @@ export class GiaiDoanCongViecComponent implements OnInit {
 
   btnAddCTGD(id: any) {
     this.id_gdoan = id;
-    this.onOpenFormEdit();
-    this.changeInputMode("add");
+    this.onOpenFormAddCTGD();
+    this.changeInputModeChiTiet("add");
   }
 
-  btnEditCTGD(object: giaiDoanCongViec,) {
-    this.onOpenFormEdit();
-    this.changeInputMode('edit', object);
+  btnEditCTGD(object: chiTietGiaiDoan,) {
+    this.onOpenFormAddCTGD();
+    this.changeInputModeChiTiet('edit', object);
   }
-  btnCancel() {
+  btnCancelCTGD() {
     this.notificationService.closeSideNavigationMenu();
   }
-
+  
 
   changeInputModeChiTiet(formType: 'add' | 'edit', object: chiTietGiaiDoan | null = null) {
     this.formState_chitietgd.formTitle = formType === 'add' ? 'Thêm công việc thuộc giai đoạn' : 'Cập nhật công việc thuộc giai đoạn';
@@ -252,7 +279,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
     if (formType === 'add') {
       this.formData_chitietgd.reset(
         {
-          // ma_congviec: this.param_id,
+          id_gdoan: this.id_gdoan,
           chi_tiet_giai_doan: '',
           ngay_hethan: '',
           trang_thai: 0,
@@ -279,6 +306,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
             this.notificationService.isProcessing(false);
             this.notificationService.toastSuccess("thành công");
             this.loadData();
+            this.needReloadData.emit('refresh-data');
             this.formData_chitietgd.reset(
               {
                 chi_tiet_giai_doan: '',
@@ -286,10 +314,11 @@ export class GiaiDoanCongViecComponent implements OnInit {
                 trang_thai: 0
               }
             )
-          }, error: () => {
+            this.btnCancelCTGD();
+          },
+           error: () => {
             this.notificationService.isProcessing(false);
             this.notificationService.toastError("Thêm thất bại");
-
           }
         })
       } else {
@@ -321,6 +350,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
           this.notificationService.isProcessing(false);
           this.notificationService.toastSuccess('Xoá thành công');
           this.loadData();
+          this.needReloadData.emit('refresh-data');
         },
         error: () => {
           this.notificationService.isProcessing(false);
@@ -332,13 +362,13 @@ export class GiaiDoanCongViecComponent implements OnInit {
 
   markCompleted(CTGD: chiTietGiaiDoan) {
     this.notificationService.isProcessing(true);
-    this.giaiDoanCongViecChiTietService.edit(CTGD.id, {trang_thai: 1}).subscribe(
+    this.giaiDoanCongViecChiTietService.edit(CTGD.id, { trang_thai: 1 }).subscribe(
       {
         next: () => {
           this.notificationService.isProcessing(false);
           this.notificationService.toastSuccess('Hoàn Thành');
+          this.needReloadData.emit('refresh-data');
           this.loadData();
-          
         },
         error: () => {
           this.notificationService.isProcessing(false);
@@ -347,7 +377,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
       }
     )
   }
-  
+}
 
 
 
@@ -379,5 +409,5 @@ export class GiaiDoanCongViecComponent implements OnInit {
     // } else {
     //   this.notificationService.alertInfo("Thông báo", "không có yêu cầu được chọn")
     // }
-  
-}
+
+

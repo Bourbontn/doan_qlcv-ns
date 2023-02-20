@@ -12,22 +12,24 @@
                 <input placeholder="Tìm kiếm công việc" type="text" pInputText [(ngModel)]="search"
                     (ngModelChange)="searchData()" />
             </span>
-            <p-dropdown [options]="dropdown" placeholder="Tình trạng" optionLabel="name" optionValue="value"
-                [showClear]="true" ></p-dropdown>
+            <!-- <p-dropdown [options]="dropdown" placeholder="Tình trạng" optionLabel="name" optionValue="value"
+                [showClear]="true" ></p-dropdown> -->
         </div>
     </div>
     <!-- end page title -->
     <div class="row pr-3">
-        <div class="card_list my-3" *ngFor="let qlcv of data">
+        <div class="card_list my-2" *ngFor="let qlcv of data_cv" (click)="toDetails(qlcv)">
             <!-- project card -->
             <div class="card border-0">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <div id="tenproject" (click)="toDetails(qlcv)"
-                            class="capitalize mt-2 my-2 w-10 text-primary text-2xl white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                <div class="card-body p-2">
+                    <div class="d-block max-h-14rem">
+                        <img src="\assets\images\img-card.jpg" class="w-100 max-h-14rem" alt="">
+                    </div>
+                     <div id="tenproject" 
+                            class="capitalize mt-2 my-2 text-primary text-2xl white-space-nowrap overflow-hidden text-overflow-ellipsis">
                             {{qlcv.tenproject}}
                         </div>
-                        <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
+                        <!-- <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
                             class="border-0 bg-transparent  my-0 ml-auto px-4"></button>
                         <mat-menu #beforeMenu="matMenu" xPosition="before">
                             <button mat-menu-item (click)="toDetails(qlcv)">
@@ -37,30 +39,31 @@
                             <button mat-menu-item (click)="btnDelete(qlcv)">
                                 <mat-icon>delete</mat-icon>Xoá
                             </button>
-                        </mat-menu>
-                    </div>
+                        </mat-menu> -->
                     <div class="p-1 text-lg white-space-nowrap overflow-hidden text-overflow-ellipsis"
-                        style="width: 82%">Phòng ban: <span class="font-medium">{{qlcv.phongban}}</span>
+                        style="width: 85%">Phòng ban: <span class="font-medium">{{qlcv.phongban}}</span>
                     </div>
                     <h6 class="p-1 text-sm mt-2"> Ngày bắt đầu: <span>{{qlcv.date_start | date: " dd/MM/yyyy"}}</span>
                     </h6>
                     <h6 class="p-1 text-sm mt-2"> Ngày kết thúc: {{qlcv.date_end | date: " dd/MM/yyyy"}}</h6>
-                    <div class="my-2 ost-label__inner text-white text-center p-2" [ngClass]="qlcv['bg_trangthai']">
-                        {{qlcv['trangthai_label']}}</div>
-                    <div class="my-2 text-base white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                    <!-- <div class="my-2 ost-label__inner text-white text-center p-2" [ngClass]="qlcv['bg_trangthai']">
+                        {{qlcv['trangthai_label']}}</div> -->
+                    <!-- <div class="my-2 text-base white-space-nowrap overflow-hidden text-overflow-ellipsis">
                         {{qlcv.tongquan}}
-                    </div>
-                    <p class="mb-5">
+                    </div> -->
+                    <!-- <p class="mb-2">
                         <span class="pr-2">
                             <i class="pi pi-list pr-2"></i>
-                            <b>5</b> Nhiệm vụ
-                        </span>
-                        <span class="pr-2">
-                            <i class="pi pi-comments pr-2"></i>
-                            <b>741</b> Bình luận
+                            <b>{{sumJobs}}</b> Nhiệm vụ
                         </span>
                     </p>
-                    <div id="tooltip-container">
+                    <p>
+                        <span class="pr-2">
+                            <i class="pi pi-comments pr-2"></i>
+                            <b>0</b> Bình luận
+                        </span>
+                    </p> -->
+                    <!-- <div id="tooltip-container">
                         <a href="" class="inline-block p-1" aria-label="Mat Helme">
                             <img src="assets/images/a_none.jpg" class="rounded-circle avatar-xs" alt="friend"
                                 width="30px">
@@ -78,14 +81,14 @@
                         <a href="" class="inline-block">
                             +7 nữa
                         </a>
-                    </div>
+                    </div> -->
                 </div> 
             </div> 
             <!-- end card-->
         </div>
     </div>
 
-    <mat-paginator  (page)="changesPage($event)" [pageIndex]="pageIndex"  [length]="pageNumber"
+    <mat-paginator class="mt-2"  (page)="changesPage($event)" [pageIndex]="pageIndex"  [length]="pageNumber"
         [pageSize]="pageSize" hidePageSize showFirstLastButtons aria-label="Select page">
     </mat-paginator>
 </div>

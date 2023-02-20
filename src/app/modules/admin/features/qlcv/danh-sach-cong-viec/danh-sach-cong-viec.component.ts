@@ -7,8 +7,11 @@ import { FileService } from '@core/services/file.service';
 import { HelperService } from '@core/services/helper.service';
 import { NotificationService } from '@core/services/notification.service';
 import { DsCongViec, PhongBan } from '@modules/shared/models/ds-cong-viec';
+import { chiTietGiaiDoan, giaiDoanCongViec } from '@modules/shared/models/giai-doan-cong-viec';
 import { DsCongViecService } from '@modules/shared/services/ds-cong-viec.service';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { GiaiDoanCongViecChiTietService } from '@modules/shared/services/giai-doan-cong-viec-chi-tiet.service';
+import { GiaiDoanCongViecService } from '@modules/shared/services/giai-doan-cong-viec.service';
+import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-danh-sach-cong-viec',
@@ -18,8 +21,10 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 export class DanhSachCongViecComponent implements OnInit {
   @ViewChild('fileChooser') fileChooser: ElementRef<HTMLInputElement>;
   dmpb: PhongBan[];
-  data: DsCongViec[];
+  data_cv: DsCongViec[];
   data_full: DsCongViec[];
+  data_gd: giaiDoanCongViec[];
+  data_ctgd: chiTietGiaiDoan[];
   fileUploaded: OvicFile[] = [];
   uploadedFiles: any[] = [];
 
@@ -29,6 +34,9 @@ export class DanhSachCongViecComponent implements OnInit {
   pageIndex = 0;
   pageSize = 10;
   pageNumber = 1;
+  sumJobs = 0;
+  sumJobs_ht = 0;
+  percentValue: any = 0;
   selectedUser: any;
   fileUploading = false;
 
@@ -46,13 +54,15 @@ export class DanhSachCongViecComponent implements OnInit {
     private fileService: FileService,
     private auth: AuthService,
     private router: Router,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private giaiDoanCongViecService: GiaiDoanCongViecService,
+    private giaiDoanCongViecChiTietService: GiaiDoanCongViecChiTietService,
   ) {
-    this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData());
+    this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData_2());
   }
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadData_2();
     this.getDvPhongBan();
   }
 
@@ -78,13 +88,13 @@ export class DanhSachCongViecComponent implements OnInit {
         this.pageNumber = hienThiDanhSachCongViec.length;
         this.pageIndex = 0;
         this.data_full = hienThiDanhSachCongViec;
-        this.data = [];
+        this.data_cv = [];
         
         // this.data_full.forEach((f, key) => {
         //   if (key >= this.pageIndex && this.data.length < this.pageSize)
         //     this.data.push(f);
         // })
-        this.data = [...this.data_full].splice(this.pageIndex, this.pageSize)
+        this.data_cv = [...this.data_full].splice(this.pageIndex, this.pageSize)
         this.showStatus(hienThiDanhSachCongViec);
       },
       error: () => {
@@ -96,6 +106,117 @@ export class DanhSachCongViecComponent implements OnInit {
   searchData() {
     this.OBSERVER_SEARCH_DATA.next(this.search);
   }
+
+
+  loadData_2() {
+    const filter = this.search ? { search: this.search.trim() } : null;
+    forkJoin([
+      this.dsCongViecService.list(1, filter),
+      this.giaiDoanCongViecService.list(1, filter),
+      this.giaiDoanCongViecChiTietService.get_list_CTGD_count(),
+    ]).subscribe(
+      {
+        next: ([dsCV, dsGDCV, dsCTGDCV]) => {
+          this.notificationService.isProcessing(false);
+          this.data_cv = dsCV;
+          dsCV.forEach((f) => {
+            this.ma_cv_auto = 'mcv' + [f.id + 1];
+          });
+          this.pageNumber = dsCV.length;
+          this.pageIndex = 0;
+          this.data_full = dsCV;
+          this.data_cv = [];
+          
+          // this.data_full.forEach((f, key) => {
+          //   if (key >= this.pageIndex && this.data.length < this.pageSize)
+          //     this.data.push(f);
+          // })
+          this.data_cv = [...this.data_full].splice(this.pageIndex, this.pageSize)
+          // this.showStatus(dsChiTiet);
+          // this.loadFileJson(dsCV);
+          // this.data_gd = dsGDCV.map(
+          //   gDoan => {
+          //     gDoan['data_giaidoan'] = dsCTGDCV.filter(m => m.id_giaidoan.toString() === gDoan.id.toString());
+          //     // gDoan['count_chitietHT'] = dsCTGDCV.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
+          //     // gDoan['count_chitietCHT'] = dsCTGDCV.filter(m => m.trang_thai === 0 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
+          //     return gDoan;
+          //   }
+          // );
+          // this.sumJobs = this.data_gd.reduce((collector, item) => collector += item['data_giaidoan'] ? item['data_giaidoan'].length : 0, 0);
+          // this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_giaidoan'] && Array.isArray(item['data_giaidoan'])) ? item['data_giaidoan'].filter(r => r['trang_thai'] === 1).length : 0, 0);
+          // this.percentValue = ((this.sumJobs_ht * 100) / this.sumJobs).toFixed();
+          // this.showFinish(this.sumJobs_ht, this.sumJobs, dsCV);
+          // console.log(this.data_cv);
+          // console.log(this.data_gd);
+          
+          // this.showStatus(dsCV);
+
+          // this.data_cv = dsCV.map(
+          //   cv =>{
+          //     cv['data_cv'] = dsGDCV.filter(m => m.ma_congviec.toString() === cv.ma_congviec.toString());
+          //     return cv;
+          //   }
+          // );
+          
+          this.data_gd = dsGDCV.map(
+              gd => {
+                gd['data_giaidoan'] = dsCTGDCV.filter(m => m.id_giaidoan.toString() === gd.id.toString());
+                return gd;
+              }
+            );
+
+          // this.sumJobs = this.data_gd.reduce((collector, item) => collector += item['data_cv'] ? item['data_cv'].length : 0, 0);
+          this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_cv'] && Array.isArray(item['data_cv'])) ? item['data_cv'].filter(r => r['trang_thai'] === 1).length : 0, 0);
+          // this.percentValue = ((this.sumJobs_ht * 100) / this.sumJobs).toFixed();
+          // this.showFinish(this.sumJobs_ht, this.sumJobs, dsCV);
+          console.log(this.data_cv);
+          
+
+        },
+        error: (err: any) => {
+          this.notificationService.isProcessing(false);
+        },
+      }
+    )
+  }
+
+  showFinish(hoanthanh, tong, data) {
+    // if (hoanthanh === tong) {
+    //   console.log("đã hoàn thành");
+    //   data.forEach((f, key) => {
+    //     f['bg_trangthai'] = 'bg-green-500';
+    //     f['trangthai_label'] = "Đã hoàn thành";
+    //   }
+    //   )
+    // }
+    // else {
+    data.forEach((f, key) => {
+      if (new Date(f.date_start) < new Date()) {
+        if (new Date(f.date_end) > new Date()) {
+          f['bg_trangthai'] = 'bg-blue-500';
+          f['trangthai_label'] = "Đang diễn ra";
+          if(tong > 0 && tong === hoanthanh){
+            f['bg_trangthai'] = 'bg-green-500';
+            f['trangthai_label'] = "Đã hoàn thành";
+          }
+          else{
+            f['bg_trangthai'] = 'bg-blue-500';
+            f['trangthai_label'] = "Đang diễn ra";
+          }
+        }
+        else {
+          f['bg_trangthai'] = 'bg-red-500';
+          f['trangthai_label'] = "Đã quá hạn";
+        }
+      }
+      else {
+        f['bg_trangthai'] = 'bg-yellow-500';
+        f['trangthai_label'] = "Chưa bắt đầu";
+      }
+    })
+    // }
+  }
+
 
 
   async btnDelete(data: DsCongViec) {
@@ -175,12 +296,12 @@ export class DanhSachCongViecComponent implements OnInit {
   }
 
   changesPage(event) {
-    this.data = [];
+    this.data_cv = [];
     // this.data_full.forEach((f, key) => {
     //   if (key >= event.pageIndex*this.pageSize && this.data.length < this.pageSize)
     //     this.data.push(f);
     // })   
-    this.data = [...this.data_full].splice(event.pageIndex * this.pageSize, this.pageSize)
+    this.data_cv = [...this.data_full].splice(event.pageIndex * this.pageSize, this.pageSize)
   }
 
   //item dropdown phongban with database

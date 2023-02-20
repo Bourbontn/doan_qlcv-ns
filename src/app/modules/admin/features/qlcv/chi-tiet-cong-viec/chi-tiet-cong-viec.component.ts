@@ -31,8 +31,8 @@ export class ChiTietCongViecComponent implements OnInit {
   dmpb: PhongBan[];
   param_mcv: string = '';
   sumJobs = 0;
-  sumJobs_ht = 0 ;
-  percentValue : any = 0;
+  sumJobs_ht = 0;
+  percentValue: any = 0;
 
   formState: {
     formType: 'add' | 'edit',
@@ -71,32 +71,34 @@ export class ChiTietCongViecComponent implements OnInit {
     private fileService: FileService,
 
   ) {
-    this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData());
+    this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData_2());
   }
 
   ngOnInit(): void {
     this.activateRoute.queryParams.subscribe(params => {
       this.param_mcv = this.auth.decryptData(params['code']);
     })
-    this.loadData();
+    // this.loadData();
     this.getDvPhongBan();
     this.loadData_2();
   }
 
-  loadData() {
-    const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
-    this.dsCongViecService.list(1, filter).subscribe({
-      next: dsChiTiet => {
-        this.data_cv = dsChiTiet;
-        this.showStatus(dsChiTiet);
-        this.loadFileJson(dsChiTiet);
-      },
-      error: () => {
-        this.notificationService.isProcessing(false);
-        this.notificationService.toastError('Lỗi không load được nội dung');
-      }
-    });
-  }
+  // loadData() {
+  //   const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
+  //   this.dsCongViecService.list(1, filter).subscribe({
+  //     next: dsChiTiet => {
+  //       this.data_cv = dsChiTiet;
+  //       this.showStatus(dsChiTiet);
+  //       this.loadFileJson(dsChiTiet);
+  //       console.log(this.data_cv);
+
+  //     },
+  //     error: () => {
+  //       this.notificationService.isProcessing(false);
+  //       this.notificationService.toastError('Lỗi không load được nội dung');
+  //     }
+  //   });
+  // }
 
   loadData_2() {
     const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
@@ -108,49 +110,21 @@ export class ChiTietCongViecComponent implements OnInit {
       {
         next: ([dsCV, dsGDCV, dsCTGDCV]) => {
           this.notificationService.isProcessing(false);
+          this.data_cv = dsCV;
+          // this.showStatus(dsChiTiet);
+          this.loadFileJson(dsCV);
           this.data_gd = dsGDCV.map(
             gDoan => {
-              // gDoan['count_giaidoan'] = dsCTGDCV.filter(m => m.id_giaidoan.toString() === gDoan.id.toString()).length;
               gDoan['data_giaidoan'] = dsCTGDCV.filter(m => m.id_giaidoan.toString() === gDoan.id.toString());
-              gDoan['count_chitietHT'] = dsCTGDCV.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
-              gDoan['count_chitietCHT'] = dsCTGDCV.filter(m => m.trang_thai === 0 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
-
-              // let c = [].concat(a, b);
-
-              // console.log("tổng đã hoàn thành:", a);
-              // console.log("tổng chưa hoàn thành:", b);
-              // console.log("Tổng a và b : ", c);
-
+              // gDoan['count_chitietHT'] = dsCTGDCV.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
+              // gDoan['count_chitietCHT'] = dsCTGDCV.filter(m => m.trang_thai === 0 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
               return gDoan;
             }
           );
-          // this.data_cv = dsCV.map(
-          //   t => {
-          //     return t;
-          //   }
-          // );
-          // this.data_cv = dsCV
-          // console.log(this.data_gd);
           this.sumJobs = this.data_gd.reduce((collector, item) => collector += item['data_giaidoan'] ? item['data_giaidoan'].length : 0, 0);
-          // console.log("tổng công việc trong giai đoạn", this.sumJobs);
-
-          this.sumJobs_ht= this.data_gd.reduce((collector, item) => collector += (item['data_giaidoan'] && Array.isArray(item['data_giaidoan'])) ? item['data_giaidoan'].filter(r => r['trang_thai'] === 1).length : 0, 0);
-
-          // const sumActiveJobs = this.data_gd
-          this.percentValue = ((this.sumJobs_ht *100) / this.sumJobs).toFixed();
-          
-          // console.log("tổng công việc đã hoàn thành trong giai đoạn", this.sumJobs_ht);
-          // console.log("Phần % đã chia", this.percentValue);
-          
-          // this.data_cv = dsCV.map(); 
-          // );
-          // this.data_cv = dsCV.map(
-          //   cv => {
-
-          //   }
-
-
-
+          this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_giaidoan'] && Array.isArray(item['data_giaidoan'])) ? item['data_giaidoan'].filter(r => r['trang_thai'] === 1).length : 0, 0);
+          this.percentValue = ((this.sumJobs_ht * 100) / this.sumJobs).toFixed();
+          this.showFinish(this.sumJobs_ht, this.sumJobs, dsCV);
         },
         error: (err: any) => {
           this.notificationService.isProcessing(false);
@@ -159,17 +133,20 @@ export class ChiTietCongViecComponent implements OnInit {
     )
   }
 
-
-  loadFileJson(object) {
-    this.fileUploaded = object.file_quyetdinh && object.file_quyetdinh.length ? object.file_quyetdinh : [];
-  }
-
-  showStatus(data) {
+  showFinish(hoanthanh, tong, data) {
     data.forEach((f, key) => {
       if (new Date(f.date_start) < new Date()) {
         if (new Date(f.date_end) > new Date()) {
           f['bg_trangthai'] = 'bg-blue-500';
           f['trangthai_label'] = "Đang diễn ra";
+          if(tong > 0 && tong === hoanthanh){
+            f['bg_trangthai'] = 'bg-green-500';
+            f['trangthai_label'] = "Đã hoàn thành";
+          }
+          else{
+            f['bg_trangthai'] = 'bg-blue-500';
+            f['trangthai_label'] = "Đang diễn ra";
+          }
         }
         else {
           f['bg_trangthai'] = 'bg-red-500';
@@ -181,7 +158,31 @@ export class ChiTietCongViecComponent implements OnInit {
         f['trangthai_label'] = "Chưa bắt đầu";
       }
     })
+    
   }
+
+  loadFileJson(object) {
+    this.fileUploaded = object.file_quyetdinh && object.file_quyetdinh.length ? object.file_quyetdinh : [];
+  }
+
+  // showStatus(data) {
+  //   data.forEach((f, key) => {
+  //     if (new Date(f.date_start) < new Date()) {
+  //       if (new Date(f.date_end) > new Date()) {
+  //         f['bg_trangthai'] = 'bg-blue-500';
+  //         f['trangthai_label'] = "Đang diễn ra";
+  //       }
+  //       else {
+  //         f['bg_trangthai'] = 'bg-red-500';
+  //         f['trangthai_label'] = "Đã quá hạn";
+  //       }
+  //     }
+  //     else {
+  //       f['bg_trangthai'] = 'bg-yellow-500';
+  //       f['trangthai_label'] = "Chưa bắt đầu";
+  //     }
+  //   })
+  // }
   backToList() {
     this.router.navigate(['/admin/cong-viec/danh-sach-cong-viec'])
   }
@@ -213,8 +214,6 @@ export class ChiTietCongViecComponent implements OnInit {
       this.formState.object = object;
       object.date_start = this.helperService.strToSQLDate(object.date_start)
       object.date_end = this.helperService.strToSQLDate(object.date_end)
-      // object.date_end = this.helperService.strToSQLDate(this.formData.value['date_end']);
-      // object.date_end = this.helperService.formatSQLDate(object.date_end);
       this.formData.reset({
         tenproject: object?.tenproject,
         tongquan: object?.tongquan,
@@ -280,8 +279,8 @@ export class ChiTietCongViecComponent implements OnInit {
           next: () => {
             this.notificationService.isProcessing(false);
             this.notificationService.toastSuccess('Cập nhật thành công');
-            this.loadData();
-            
+            this.loadData_2();
+
           }, error: () => {
             this.notificationService.isProcessing(false);
             this.notificationService.toastError("Cập nhật thất bại thất bại");

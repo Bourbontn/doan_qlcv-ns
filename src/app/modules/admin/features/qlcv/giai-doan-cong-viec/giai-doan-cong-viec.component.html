@@ -15,11 +15,11 @@
                         <mat-icon>add</mat-icon>
                         <span>Thêm công việc</span>
                     </button>
-                    <button mat-menu-item (click)="btnEditCTGD(stage)">
+                    <button mat-menu-item (click)="btnEditGiaiDoan(stage)">
                         <mat-icon>edit</mat-icon>
                         <span>Sửa giai đoạn công việc</span>
                     </button>
-                    <button mat-menu-item>
+                    <button mat-menu-item (click)="delete_GD(stage)">
                         <mat-icon>delete</mat-icon>
                         Xoá
                     </button>
@@ -31,7 +31,9 @@
         <ng-container *ngIf="stage['data_chitietgiaidoan']">
             <div *ngFor="let i of stage['data_chitietgiaidoan']">
                 <label class="mb-0 pl-5 py-2 d-flex gap-3 checklist-item">
-                    <input class="form-check-input flex-shrink-0" type="checkbox" value="" [disabled]="i['disabled_tbn']" [(ngModel)]="i['checked']" style="font-size: 1.375em;" (change)="markCompleted(i)">
+                    <input class="form-check-input flex-shrink-0" type="checkbox" value=""
+                        [disabled]="i['disabled_tbn']" [(ngModel)]="i['checked']" style="font-size: 1.375em;"
+                        (change)="markCompleted(i)">
                     <span class="checklist-item-details-text">{{i['chi_tiet_giai_doan']}}
                         <span [ngClass]="i['bg_trangthai']">{{i['label_trangthai']}}</span>
                     </span>
@@ -86,10 +88,13 @@
                 <div class="col-xl-12">
                     <div class="mb-3 mt-3 mt-xl-0">
                         <label for="projectname" class="form-label text-xl">Tên công việc</label>
-                        <input type="text" id="projectname" class="form-control capitalize"
-                            placeholder="Nhập tên công việc" formControlName="chi_tiet_giai_doan">
+                        <!-- <input type="text" id="projectname" class="form-control capitalize"
+                            placeholder="Nhập tên công việc" formControlName="chi_tiet_giai_doan"> -->
+
+                        <textarea class="form-control capitalize" id="project-overview" rows="5"
+                            placeholder="Nhập tên công việc....." formControlName="chi_tiet_giai_doan"></textarea>
                     </div>
-                    <div class="mb-3 inline-block text-xl">
+                    <div class="mb-3 inline-block text-xl w-100">
                         <label class="form-label">Ngày kết thúc</label>
                         <br>
                         <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan">
@@ -100,11 +105,12 @@
                 <button (click)="updateFormChiTiet()" [disabled]="formData_chitietgd.invalid" pButton pRipple
                     class=" mr-2 max-w-10rem p-button-success" icon="pi pi-save" label="Xác nhận"></button>
                 <button pRipple pButton type="button" class="p-button p-button-danger" icon="pi pi-times"
-                    (click)="btnCancel()"></button>
+                    (click)="btnCancelCTGD()"></button>
             </div>
         </form>
     </div>
 </ng-template>
+
 
 <!-- dia log here -->
 <!-- <p-dialog header="Thông tin chi tiết" [(visible)]="displayMaximizable" [dismissableMask]="true" [modal]="true"

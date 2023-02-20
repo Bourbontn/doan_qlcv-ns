@@ -14,6 +14,7 @@
                         <div class="text-2xl capitalize text-primary">{{chitietCV.tenproject}}</div>
                         <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
                             class="border-0 bg-transparent  my-0 ml-auto px-4"></button>
+                            
                         <mat-menu #beforeMenu="matMenu" xPosition="before">
                             <button mat-menu-item (click)="btnEdit(chitietCV)">
                                 <mat-icon>edit</mat-icon>
@@ -36,7 +37,7 @@
                         as a natural lead-in to additional contenposuere erat a ante.
                     </p>
                     <div>
-                        <app-giai-doan-cong-viec></app-giai-doan-cong-viec>
+                        <app-giai-doan-cong-viec (needReloadData)="loadData_2()" ></app-giai-doan-cong-viec>
                     </div>
                     
                 </div>
