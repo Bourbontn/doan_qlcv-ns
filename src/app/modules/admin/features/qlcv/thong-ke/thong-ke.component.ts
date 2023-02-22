@@ -1,4 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { DsCongViec } from '@modules/shared/models/ds-cong-viec';
 import { chiTietGiaiDoan, giaiDoanCongViec } from '@modules/shared/models/giai-doan-cong-viec';
@@ -17,23 +19,31 @@ export class ThongKeComponent implements OnInit {
 
   param_mcv: string = '';
   data_cv: DsCongViec[];
+  data_cv1: DsCongViec[];
   data_gd: giaiDoanCongViec[];
   data_ctgd: chiTietGiaiDoan[];
   sumJobs = 0;
-  sumJobs_ht = 0 ;
-  percentValue : any = 0;
+  sumJobs_ht = 0;
+  percentValue: any = 0;
 
   constructor(
+    private auth: AuthService,
+    private router: Router,
     public dsCongViecService: DsCongViecService,
     private giaiDoanCongViecService: GiaiDoanCongViecService,
     private giaiDoanCongViecChiTietService: GiaiDoanCongViecChiTietService,
     private notificationService: NotificationService,
 
-    ) { }
+  ) { }
 
   ngOnInit(): void {
-    this.loadData();
+    // this.loadData();
     this.loadData_2();
+
+    // console.log(this.auth.userCanAccess('cong-viec/thong-ke'));
+    // console.log(this.auth.userCanAdd('cong-viec/thong-ke'));
+    // console.log(this.auth.userCanEdit('cong-viec/thong-ke'));
+    // console.log(this.auth.userCanDelete('cong-viec/thong-ke'));
   }
 
   loadData() {
@@ -49,7 +59,7 @@ export class ThongKeComponent implements OnInit {
       }
     });
   }
-
+  j: any;
   loadData_2() {
     const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
     forkJoin([
@@ -60,19 +70,60 @@ export class ThongKeComponent implements OnInit {
       {
         next: ([dsCV, dsGDCV, dsCTGDCV]) => {
           this.notificationService.isProcessing(false);
-          this.data_gd = dsGDCV.map(
-            gDoan => {
-              gDoan['data_giaidoan'] = dsCTGDCV.filter(m => m.id_giaidoan.toString() === gDoan.id.toString());
-              // gDoan['count_chitietHT'] = dsCTGDCV.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
-              // gDoan['count_chitietCHT'] = dsCTGDCV.filter(m => m.trang_thai === 0 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
-              return gDoan;
+          this.data_cv1 = dsCV.map(
+            cv => {
+              const data_giai_doan = dsGDCV.filter(m => m.ma_congviec.toString() === cv.ma_congviec.toString()).map(
+                m2 => {
+                  m2['data_giaidoan_chi_tiet'] = dsCTGDCV.filter(m => m.id_giaidoan.toString() === m2.id.toString());
+                  return m2;
+                }
+              );
+
+              cv['data_giai_doan'] = data_giai_doan;
+
+              const { done, sum }: { done: number, sum: number } = data_giai_doan.reduce((collector, gd) => {
+                collector.done += gd['data_giaidoan_chi_tiet'].filter(i => i.trang_thai === 1).length;
+                collector.sum += gd['data_giaidoan_chi_tiet'].length;
+                return collector;
+              }, { done: 0, sum: 0 });
+
+              cv['__done'] = done;
+              cv['__sum'] = sum;
+              cv['__rate'] = sum ? ((done / sum) * 100).toFixed() : 0;
+
+              let flag = false;
+              if (new Date(cv.date_start) > new Date()) {
+                cv['bg_trangthai'] = 'bg-yellow-500';
+                cv['trangthai_label'] = "Chưa bắt đầu";
+              } else {
+                if (new Date(cv.date_end) > new Date()) {
+                  cv['bg_trangthai'] = 'bg-blue-500';
+                  cv['trangthai_label'] = "Đang diễn ra";
+                  if (done === sum) {
+                    flag = true;
+                  }
+                } else {
+                  // cv['bg_trangthai'] = 'bg-red-500';
+                  // cv['trangthai_label'] = "Đã quá hạn";
+                  flag = true;
+                }
+
+                if (flag) {
+                  cv['bg_trangthai'] = done === sum ? 'bg-green-500' : 'bg-yellow-500';
+                  cv['trangthai_label'] = done === sum ? "Đã hoàn thành" : "Chưa hoàn thành";
+                }
+              }
+
+
+              // cv['__done_job'] = data_giai_doan.filter( item => item.trang_thai === 1).length;
+              // this.showStatus(cv['data_giai_doan']);
+              // this.showFinish(sum, done, cv,cv['data_giai_doan']);
+
+              return cv;
             }
           );
-          this.sumJobs = this.data_gd.reduce((collector, item) => collector += item['data_giaidoan'] ? item['data_giaidoan'].length : 0, 0);
-          this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_giaidoan'] && Array.isArray(item['data_giaidoan'])) ? item['data_giaidoan'].filter(r => r['trang_thai'] === 1).length : 0, 0);
-          this.percentValue = ((this.sumJobs_ht * 100) / this.sumJobs).toFixed();
-          console.log(this.data_gd);
-          
+          console.log(this.data_cv1);
+
         },
         error: (err: any) => {
           this.notificationService.isProcessing(false);
@@ -80,6 +131,33 @@ export class ThongKeComponent implements OnInit {
       }
     )
   }
+  showFinish(tong, hoanthanh, cv, data) {
+    data.forEach((f, key) => {
+      if (new Date(f.date_start) < new Date()) {
+        if (new Date(f.date_end) > new Date()) {
+          cv['bg_trangthai'] = 'bg-blue-500';
+          cv['trangthai_label'] = "Đang diễn ra";
+          if (tong.length > 0 && tong.length === hoanthanh.length) {
+            cv['bg_trangthai'] = 'bg-green-500';
+            cv['trangthai_label'] = "Đã hoàn thành";
+          }
+        }
+        else {
+          cv['bg_trangthai'] = 'bg-red-500';
+          cv['trangthai_label'] = "Đã quá hạn";
+          if (tong.length > 0 && tong.length === hoanthanh.length) {
+            cv['bg_trangthai'] = 'bg-green-500';
+            cv['trangthai_label'] = "Đã hoàn thành";
+          }
+        }
+      }
+      else {
+        cv['bg_trangthai'] = 'bg-yellow-500';
+        cv['trangthai_label'] = "Chưa bắt đầu";
+      }
+    })
+  }
+
   showStatus(data) {
     data.forEach((f, key) => {
       if (new Date(f.date_start) < new Date()) {
@@ -97,5 +175,14 @@ export class ThongKeComponent implements OnInit {
         f['trangthai_label'] = "Chưa bắt đầu";
       }
     })
+  }
+
+  toDetails(object: DsCongViec) {
+    const code = this.auth.encryptData(`${object.ma_congviec}`);
+    this.router.navigate(['/admin/cong-viec/chi-tiet-cong-viec'], { queryParams: { code } })
+    // const url = this.router.serializeUrl(
+    //   this.router.createUrlTree(['/admin/cong-viec/chi-tiet-cong-viec'], { queryParams: { code } })
+    // );
+    // console.log(code);
   }
 }

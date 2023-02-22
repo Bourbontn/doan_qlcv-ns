@@ -123,7 +123,7 @@ export class ChiTietCongViecComponent implements OnInit {
           );
           this.sumJobs = this.data_gd.reduce((collector, item) => collector += item['data_giaidoan'] ? item['data_giaidoan'].length : 0, 0);
           this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_giaidoan'] && Array.isArray(item['data_giaidoan'])) ? item['data_giaidoan'].filter(r => r['trang_thai'] === 1).length : 0, 0);
-          this.percentValue = ((this.sumJobs_ht * 100) / this.sumJobs).toFixed();
+          this.percentValue = this.sumJobs ? ((this.sumJobs_ht / this.sumJobs) *100 ).toFixed() : 0 ;
           this.showFinish(this.sumJobs_ht, this.sumJobs, dsCV);
         },
         error: (err: any) => {
@@ -151,6 +151,10 @@ export class ChiTietCongViecComponent implements OnInit {
         else {
           f['bg_trangthai'] = 'bg-red-500';
           f['trangthai_label'] = "Đã quá hạn";
+          if(tong > 0 && tong === hoanthanh){
+            f['bg_trangthai'] = 'bg-green-500';
+            f['trangthai_label'] = "Đã hoàn thành";
+          }
         }
       }
       else {
@@ -158,7 +162,6 @@ export class ChiTietCongViecComponent implements OnInit {
         f['trangthai_label'] = "Chưa bắt đầu";
       }
     })
-    
   }
 
   loadFileJson(object) {
@@ -184,7 +187,7 @@ export class ChiTietCongViecComponent implements OnInit {
   //   })
   // }
   backToList() {
-    this.router.navigate(['/admin/cong-viec/danh-sach-cong-viec'])
+    this.router.navigate(['/admin/cong-viec/thong-ke'])
   }
 
   //form gruop 
@@ -296,7 +299,10 @@ export class ChiTietCongViecComponent implements OnInit {
     this.notificationService.closeSideNavigationMenu();
   }
   downloadFile(file: OvicFile) {
+    this.notificationService.isProcessing(true);
     this.fileService.downloadWithProgress(file.id, file.title).subscribe();
+    this.notificationService.isProcessing(false);
+
   }
 
   // deleteFile(file: OvicFile) {
@@ -323,8 +329,31 @@ export class ChiTietCongViecComponent implements OnInit {
       }
     })
   }
-}
 
+  // thêm file 
+
+  myUploader() {
+    this.fileChooser.nativeElement.click();
+  }
+  fileChanges(event) {
+    this.fileUploaded = [];
+    if (event.target.files && event.target.files.length) {
+      this.fileService.uploadFiles(event.target.files, this.auth.userDonViId, this.auth.user.id).subscribe({
+        next: files => {
+          this.formData.get('file_congviec').setValue(files);
+          this.fileUploaded = files;
+          event.target.files = null;
+          this.notificationService.toastSuccess("Upload file thành công");
+        },
+        error: () => {
+          this.notificationService.toastError("Upload file thất bại");
+        }
+      });
+    }
+    
+  }
+
+}
 
 //giai đoạn công việc
 

@@ -1,5 +1,5 @@
 <div class="intro-y">
-  <div class="row px-3 mb-2">
+  <div class="row px-3">
     <h5 class="page-title intro-x mb-3"> Danh sách công việc </h5>
     <div class="ml-auto">
       <span class="p-input-icon-right mr-2">
@@ -12,25 +12,25 @@
   </div>
   <!-- start table here -->
   <div>
-    <p-table #dt [value]="data_cv" selectionMode="multiple" styleClass="p-datatable-customers"
+    <p-table #dt [value]="data_cv1" selectionMode="multiple" styleClass="p-datatable-customers"
       [selectionPageOnly]="true" [rowHover]="true" [rows]="10" [paginator]="true">
       <ng-template pTemplate="header">
         <tr>
-          <th class="table_cv" style="width: 50%" pSortableColumn="tencongviec">Dự án & công việc</th>
-          <th class="table_cv" style="width: 10%" pSortableColumn="nguoidexuat">Phòng ban</th>
-          <th class="table_cv" style="width: 20%" pSortableColumn="phongban">Thống kê</th>
-          <th class="table_cv" style="width: 10%" pSortableColumn="ngaydexuat">Trạng thái</th>
+          <th class="table_cv" style="width: 50%" pSortableColumn="tenproject">Dự án & công việc</th>
+          <th class="table_cv" style="width: 10%" pSortableColumn="phongban">Phòng ban</th>
+          <th class="table_cv" style="width: 20%" pSortableColumn="">Thống kê</th>
+          <th class="table_cv" style="width: 10%" pSortableColumn="trang_thai">Trạng thái</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-dscv>
-        <tr class="p-selectable-row">
+        <tr class="p-selectable-row" (click)="toDetails(dscv)">
           <td class="capitalize">
             <ul class="list-none p-0 m-0">
               <li class="font-semibold">
                 {{dscv.tenproject}}
               </li>
               <li>
-               <span class="text-sm"> {{dscv.tongquan}}</span>
+                <span class="text-sm"> {{dscv.tongquan}}</span>
               </li>
             </ul>
           </td>
@@ -44,11 +44,12 @@
             <span class="capitalize"></span>
             <ul class="list-none p-0">
               <li class="font-semibold flex">
-                <span>{{sumJobs_ht}} / {{sumJobs}} Hoàn thành</span>
-                <span class="ml-auto">{{percentValue}}%</span>
+                <span class="mr-2">{{dscv['__done']}} / {{dscv['__sum']}} Hoàn thành</span>
+                <!-- <span>1 quá hạn</span> -->
+                <span class="ml-auto">{{dscv['__rate']}}%</span>
               </li>
               <li>
-                <p-progressBar [value]="percentValue" [showValue]="false" 
+                <p-progressBar [value]="dscv['__rate']" [showValue]="false"
                   [style]="{'height': '0.5rem'}"></p-progressBar>
               </li>
             </ul>
@@ -57,7 +58,8 @@
           <td>
             <!-- <span class="p-column-title">Date</span> -->
             <span class="capitalize"></span>
-            <div class="my-2 ost-label__inner text-white text-center p-2 border-round-md" [ngClass]="dscv['bg_trangthai']">
+            <div class="my-2 ost-label__inner text-white text-center p-2 border-round-md"
+              [ngClass]="dscv['bg_trangthai']">
               {{dscv['trangthai_label']}}</div>
           </td>
         </tr>

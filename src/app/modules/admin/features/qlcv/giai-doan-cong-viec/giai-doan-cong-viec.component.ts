@@ -72,6 +72,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
               return gDoan;
             }
           );
+          
         },
         error: (err: any) => {
           this.notificationService.isProcessing(false);
@@ -87,10 +88,10 @@ export class GiaiDoanCongViecComponent implements OnInit {
         f['bg_trangthai'] = 'work-doing';
         f['label_trangthai'] = 'đang làm';
         if (new Date(f.ngay_hethan) < new Date()) {
-          f['bg_ngayhethan'] = 'work-unfinished';
-          f['label_ngayhethan'] = "quá hạn";
           f['bg_trangthai'] = 'work-unfinished';
-          f['label_trangthai'] = 'không hoàn thành';
+          f['label_trangthai'] = "quá hạn";
+          // f['bg_trangthai'] = 'work-unfinished';
+          // f['label_trangthai'] = 'không hoàn thành';
         }
       }
       else {
@@ -206,8 +207,6 @@ export class GiaiDoanCongViecComponent implements OnInit {
         error: () => {
           this.notificationService.isProcessing(false);
           this.notificationService.toastWarning('Xoá thất bại');
-          
-          
         }
       }
     )

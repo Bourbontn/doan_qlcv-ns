@@ -229,4 +229,5 @@ export class FileService {
 		const params = new HttpParams().set( 'donvi_id' , donvi_id.toString() ).set( 'user_id' , user_id.toString() );
 		return this.http.post<Dto>( this.media , FileService.packFiles( arrFiles ) , { params : params } ).pipe( map( res => res.data));
 	}
+	
 }

@@ -169,7 +169,6 @@ export class DanhSachCongViecComponent implements OnInit {
           this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_cv'] && Array.isArray(item['data_cv'])) ? item['data_cv'].filter(r => r['trang_thai'] === 1).length : 0, 0);
           // this.percentValue = ((this.sumJobs_ht * 100) / this.sumJobs).toFixed();
           // this.showFinish(this.sumJobs_ht, this.sumJobs, dsCV);
-          console.log(this.data_cv);
           
 
         },

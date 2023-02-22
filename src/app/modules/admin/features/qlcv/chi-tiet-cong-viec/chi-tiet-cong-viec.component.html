@@ -7,14 +7,14 @@
         </div>
     </div>
     <div class="row">
-        <div class="container_left project_card mb-2" >
+        <div class="container_left project_card mb-2">
             <div class="card d-block mb-3" *ngFor="let chitietCV of data_cv">
-                <div class="card-body" >
+                <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="text-2xl capitalize text-primary">{{chitietCV.tenproject}}</div>
                         <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
                             class="border-0 bg-transparent  my-0 ml-auto px-4"></button>
-                            
+
                         <mat-menu #beforeMenu="matMenu" xPosition="before">
                             <button mat-menu-item (click)="btnEdit(chitietCV)">
                                 <mat-icon>edit</mat-icon>
@@ -37,24 +37,19 @@
                         as a natural lead-in to additional contenposuere erat a ante.
                     </p>
                     <div>
-                        <app-giai-doan-cong-viec (needReloadData)="loadData_2()" ></app-giai-doan-cong-viec>
+                        <app-giai-doan-cong-viec (needReloadData)="loadData_2()"></app-giai-doan-cong-viec>
                     </div>
-                    
+
                 </div>
-            </div> 
+            </div>
             <div class="card">
                 <div class="card-body">
-                    <h4 class="mt-0 mb-3">Comments</h4>
-                    <textarea class="form-control form-control-light mb-2" placeholder="Write message"
+                    <h4 class="mt-0 mb-3">Bình luận</h4>
+                    <textarea class="form-control form-control-light mb-2" placeholder="Bình luận của bạn...."
                         id="example-textarea" rows="3"></textarea>
                     <div class="text-end">
-                        <div class="btn-group mb-2">
-                            <button type="button" class="btn btn-link btn-sm text-muted font-18"><i
-                                    class="ri-attachment-2"></i></button>
-                        </div>
-                        <div class="btn-group mb-2 ms-2">
-                            <button type="button" class="btn btn-primary btn-sm">Submit</button>
-                        </div>
+                        <button type="button" pButton pRipple icon="pi pi-send" class="btn btn-primary btn-sm flex ml-auto" label="Gửi"></button>
+                        
                     </div>
                 </div> <!-- end card-body-->
             </div>
@@ -71,12 +66,12 @@
                             <li class="mb-2">
                                 <div class="flex">
                                     <i class="pi pi-check-square mr-2"></i>
-                                    <div class="w-100" >
+                                    <div class="w-100">
                                         <div class="flex">
                                             <span>{{sumJobs_ht}} / {{sumJobs}} Hoàn thành</span>
                                             <span class="ml-auto">{{percentValue}}%</span>
                                         </div>
-                                        <p-progressBar [value]="percentValue" [showValue]="false" 
+                                        <p-progressBar [value]="percentValue" [showValue]="false"
                                             [style]="{'height': '0.5rem'}"></p-progressBar>
                                     </div>
                                 </div>
@@ -112,10 +107,11 @@
             <div class="card mt-4">
                 <div class="card-body">
                     <div class="text-base flex mb-2">
-                       <span class="py-1">
-                        Tài liệu
-                       </span> 
-                       <button class="nch-button ml-auto">Thêm tài liệu</button>
+                        <span class="py-1">
+                            Tài liệu
+                        </span>
+                        <button class="nch-button ml-auto" (click)="myUploader()">Thêm tài liệu</button>
+                        <input class="d-none " #fileChooser type="file" multiple="true" (change)="fileChanges($event)">
                     </div>
                     <div>
                         <ul class="ovic-document-list__file-list" *ngFor="let chitietCV of data_cv">
@@ -124,23 +120,23 @@
                                     <span class="ovic-document-list__file-icon ovic-filetext-icon"></span>
                                     <span class="ovic-document-list__file-name">{{files.title}}</span>
                                 </button>
-                                <!-- <button type="button" class="ovic-document-list__download-icon"
-                                    (click)="downloadFile()">
+                                <button type="button" class="ovic-document-list__download-icon"
+                                    (click)="downloadFile(files)">
                                     <i aria-hidden="true" class="fa fa-download mr-2">
                                     </i> tải xuống
-                                </button> -->
+                                </button>
                             </li>
                         </ul>
                     </div>
-                    <div class="ovic-document-list__empty-mes">
+                    <!-- <div class="ovic-document-list__empty-mes">
                         <p class="ovic-document-list__empty-text">Không đính kèm file
                         </p>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
     </div>
-    
+
 </div>
 
 <ng-template #cvFormEdit let-c="close">
@@ -180,7 +176,7 @@
                             formControlName="phongban" [style]="{'minWidth': '40%'}"></p-dropdown>
                     </div>
                 </div>
-                 <!-- end col-->
+                <!-- end col-->
             </div>
             <div class="flex mt-2">
                 <button (click)="updateForm()" [disabled]="formData.invalid" pButton pRipple

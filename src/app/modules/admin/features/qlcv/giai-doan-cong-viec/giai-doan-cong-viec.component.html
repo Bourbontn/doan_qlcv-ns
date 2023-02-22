@@ -1,7 +1,7 @@
 <div class="list_work" *ngFor="let stage of data_gd">
     <div class="flex">
         <i class="bi bi-caret-right-fill"></i>
-        <b class="text-base">Giai đoạn {{stage['__sttGiaidoan']}} : {{stage.ten_giaidoan}}</b>
+        <b class="text-base mr-2">Giai đoạn {{stage['__sttGiaidoan']}} : {{stage.ten_giaidoan}}</b>
         <div class="ml-auto">
             <span>
                 <i class="pi pi pi-check-square">
@@ -31,16 +31,13 @@
         <ng-container *ngIf="stage['data_chitietgiaidoan']">
             <div *ngFor="let i of stage['data_chitietgiaidoan']">
                 <label class="mb-0 pl-5 py-2 d-flex gap-3 checklist-item">
-                    <input class="form-check-input flex-shrink-0" type="checkbox" value=""
-                        [disabled]="i['disabled_tbn']" [(ngModel)]="i['checked']" style="font-size: 1.375em;"
-                        (change)="markCompleted(i)">
-                    <span class="checklist-item-details-text">{{i['chi_tiet_giai_doan']}}
-                        <span [ngClass]="i['bg_trangthai']">{{i['label_trangthai']}}</span>
-                    </span>
+                    <input class="form-check-input flex-shrink-0" type="checkbox" value="" [disabled]="i['disabled_tbn']" [(ngModel)]="i['checked']" style="font-size: 1.375em;" (change)="markCompleted(i)">
+                    <span class="checklist-item-details-text">{{i['chi_tiet_giai_doan']}}</span>
                     <span class="ml-auto">
+                        <span [ngClass]="i['bg_trangthai']">{{i['label_trangthai']}}</span>
+                        <span [ngClass]="i['bg_ngayhethan']">{{i['label_ngayhethan']}}</span>
                         <i class="pi pi-clock p-1 font-semibold"></i>
                         {{i['ngay_hethan']| date:"dd/MM/yyyy"}}
-                        <span [ngClass]="i['bg_ngayhethan']">{{i['label_ngayhethan']}}</span>
                         <span class="checklist-item-due hiden-button ml-2">
                             <button class="btn-control" type="button" (click)="delete_CTGD(i)">
                                 <i class="pi pi-times text-lg text-red-500"></i>
@@ -64,6 +61,13 @@
                             <textarea id="float-input" rows="3" cols="40" pInputTextarea formControlName="ten_giaidoan"
                                 placeholder="Nhập tiêu đề cho thẻ này..."></textarea>
                         </span>
+                        <!-- <div class="mb-3 inline-block text-xl w-100">
+                            <label class="form-label">Ngày bắt đầu</label>
+                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan">
+                            <label class="form-label">Ngày kết thúc</label>
+                            <br>
+                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan">
+                        </div> -->
                     </div>
                 </form>
                 <div class="card-composer-controls">
