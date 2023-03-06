@@ -25,6 +25,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
 import { NotificationComponent } from './dashboard/notification/notification.component';
+import {ChartModule} from 'primeng/chart';
+
 @NgModule({
 	declarations: [
 		DashboardComponent,
@@ -51,7 +53,9 @@ import { NotificationComponent } from './dashboard/notification/notification.com
 		DropdownModule,
 		FormsModule,
 		MatListModule,
-		BadgeModule
+		BadgeModule,
+		ChartModule
+
 	]
 })
 export class AdminModule { }

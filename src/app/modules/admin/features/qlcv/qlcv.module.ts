@@ -27,7 +27,6 @@ import {TieredMenuModule} from 'primeng/tieredmenu';
 import {EditorModule} from 'primeng/editor';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import {DialogModule} from 'primeng/dialog';
-
 @NgModule({
   declarations: [
     TaiLieuComponent,
@@ -58,7 +57,7 @@ import {DialogModule} from 'primeng/dialog';
     TieredMenuModule,
     EditorModule,
     OverlayPanelModule,
-    DialogModule
+    DialogModule,
   ]
 })
 export class QlcvModule { }

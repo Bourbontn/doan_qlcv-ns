@@ -20,7 +20,8 @@ export class GiaiDoanCongViecComponent implements OnInit {
 
   @Output() needReloadData = new EventEmitter<string>();
 
-  @ViewChild("gdFormEdit") gdFormEdit: TemplateRef<any>;
+  @ViewChild("formChitietgd") formChitietgd: TemplateRef<any>;
+  @ViewChild("formGd") formGd: TemplateRef<any>;
 
   data_gd: giaiDoanCongViec[];
   data_ctgd: chiTietGiaiDoan[];
@@ -52,6 +53,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
   }
 
   loadData() {
+
     let sttGiaidoan = 0;
     const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
     forkJoin([
@@ -60,7 +62,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
       this.giaiDoanCongViecChiTietService.get_list_CTGD_count(),
     ]).subscribe(
       {
-        next: ([dsCV,dsGDCV, _count]) => {
+        next: ([dsCV, dsGDCV, _count]) => {
           this.notificationService.isProcessing(false);
           this.data_gd = dsGDCV.map(
             gDoan => {
@@ -69,11 +71,13 @@ export class GiaiDoanCongViecComponent implements OnInit {
               gDoan['data_chitietgiaidoan'] = _count.filter(m => m.id_giaidoan.toString() === gDoan.id.toString());
               gDoan['count_trangthai'] = _count.filter(m => m.trang_thai === 1 && m.id_giaidoan.toString() === gDoan.id.toString()).length;
               this.showStatus_trangthai(gDoan['data_chitietgiaidoan']);
+              
               return gDoan;
             }
           );
-          
+
         },
+
         error: (err: any) => {
           this.notificationService.isProcessing(false);
         },
@@ -122,15 +126,23 @@ export class GiaiDoanCongViecComponent implements OnInit {
       formTitle: '',
       object: null
     }
-  onOpenFormEdit() {
 
+  onOpenFormEdit() {
+    this.notificationService.openSideNavigationMenu({
+      template: this.formGd,
+      size: 500,
+    })
   }
+
   btnAddGiaiDoan() {
     this.changeInputMode("add");
   }
   btnEditGiaiDoan(object: giaiDoanCongViec) {
     this.onOpenFormEdit();
     this.changeInputMode('edit', object);
+  }
+  btnCancelGiaiDoan() {
+    this.notificationService.closeSideNavigationMenu();
   }
 
   changeInputMode(formType: 'add' | 'edit', object: giaiDoanCongViec | null = null) {
@@ -146,6 +158,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
     } else {
       this.formState.object = object;
       this.formData.reset({
+        ma_congviec: this.param_mcv,
         ten_giaidoan: object?.ten_giaidoan,
       })
     }
@@ -174,19 +187,19 @@ export class GiaiDoanCongViecComponent implements OnInit {
         })
       } else {
         this.notificationService.isProcessing(true);
-        // const index = this.data_yeucau.findIndex(r => r.id === this.formState.object.id);
-        //   this.yeuCauService.edit(this.data_yeucau[index].id, this.formData.value).subscribe({
-        //     next: () => {
-        //       this.notificationService.isProcessing(false);
-        //       this.notificationService.toastSuccess('Cập nhật thành công');
-        //       this.loadData();
-        //       this.closeSide();
-        //     }, error: () => {
-        //       this.notificationService.isProcessing(false);
-        //       this.notificationService.toastError("Cập nhật thất bại thất bại");
-        //     }
-        //   })
-        // }
+        const index = this.data_gd.findIndex(r => r.id === this.formState.object.id);
+        this.giaiDoanCongViecService.edit(this.data_gd[index].id, this.formData.value).subscribe({
+          next: () => {
+            this.notificationService.isProcessing(false);
+            this.notificationService.toastSuccess('Cập nhật thành công');
+            this.loadData();
+            this.btnCancelGiaiDoan();
+
+          }, error: () => {
+            this.notificationService.isProcessing(false);
+            this.notificationService.toastError("Cập nhật thất bại thất bại");
+          }
+        })
       }
     }
     else {
@@ -252,7 +265,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
 
   onOpenFormAddCTGD() {
     this.notificationService.openSideNavigationMenu({
-      template: this.gdFormEdit,
+      template: this.formChitietgd,
       size: 500,
     })
   }
@@ -270,7 +283,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
   btnCancelCTGD() {
     this.notificationService.closeSideNavigationMenu();
   }
-  
+
 
   changeInputModeChiTiet(formType: 'add' | 'edit', object: chiTietGiaiDoan | null = null) {
     this.formState_chitietgd.formTitle = formType === 'add' ? 'Thêm công việc thuộc giai đoạn' : 'Cập nhật công việc thuộc giai đoạn';
@@ -306,6 +319,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
             this.notificationService.toastSuccess("thành công");
             this.loadData();
             this.needReloadData.emit('refresh-data');
+            
             this.formData_chitietgd.reset(
               {
                 chi_tiet_giai_doan: '',
@@ -315,7 +329,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
             )
             this.btnCancelCTGD();
           },
-           error: () => {
+          error: () => {
             this.notificationService.isProcessing(false);
             this.notificationService.toastError("Thêm thất bại");
           }

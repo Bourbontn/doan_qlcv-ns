@@ -13,10 +13,10 @@
             <form action="#" class="sign-up-form" [formGroup]="loginForm">
                 <figure class="sign-up-form__logo">
                     <img src="../../../../../assets/images/logo.png" alt="ictu log" width="941" height="941"></figure>
-                <h2 class="sign-up-form__title">Xin chào, vui lòng đăng nhập để vào học...</h2>
+                <h2 class="sign-up-form__title">Xin chào, vui lòng đăng nhập để vào...</h2>
                 <div class="input-field">
                     <i class="fa fa-user" aria-hidden="true"></i>
-                    <input type="text" placeholder="Mã sinh viên" formControlName="username" autocomplete="username"/>
+                    <input type="text" placeholder="Mã nhân viên" formControlName="username" autocomplete="username"/>
                 </div>
                 <div class="input-field input-field--password">
                     <i class="fa fa-lock" aria-hidden="true"></i>
@@ -42,7 +42,7 @@
         <div class="panel left-panel"></div>
         <div class="panel right-panel">
             <div class="content text-right">
-                <h3 class="right-panel__first-title">Hệ thống học trực tuyến</h3>
+                <h3 class="right-panel__first-title">Hệ thống quản lý công việc</h3>
                 <p class="right-panel__seconds-title">Trường Đại học Công nghệ Thông tin và Truyền thông</p>
                 <span class="right-panel__line"></span>
             </div>
@@ -89,11 +89,11 @@
                 </svg>
             </div>
             <h3 class="ovic-form-rsp__title">Bạn quên mật khẩu?</h3>
-            <b class="ovic-form-rsp__subtitle">Vui lòng nhập địa chỉ Email (mã-sinh-viên@ictu.edu.vn) mà trường đã cấp cho bạn để nhận link khôi phục mật khẩu</b>
+            <b class="ovic-form-rsp__subtitle">Vui lòng nhập địa chỉ Email để  khôi phục mật khẩu</b>
             <form class="ovic-form-rsp__form" [formGroup]="resetPasswordForm">
                 <div class="wrap-form-row text-center">
                     <span class="ovic-form-rsp__lbl-input">
-                        <input type="text" formControlName="email" autocomplete="email" placeholder="ICTU Email">
+                        <input type="text" formControlName="email" autocomplete="email" placeholder="Vui lòng nhập Email...">
                         <i class="fa fa-spinner fa-spin fa-3x fa-fw" *ngIf="resetPasswordLoading"></i>
                         <span class="ovic-form-rsp__f-message" [class.showed]="showEmailInvalid">Email chưa đúng định dạng</span>
                     </span>

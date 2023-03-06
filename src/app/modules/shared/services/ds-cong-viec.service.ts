@@ -62,4 +62,9 @@ export class DsCongViecService {
 	getData_Phongban(): Observable<PhongBan[]> {
 		return this.http.get<Dto>(this.apidmpb).pipe(map(res => res.data));
 	}
+
+	filter():Observable<any>{
+		return this.http.get<Dto>(this.api).pipe(map(res => res.data));
+
+	}
 }

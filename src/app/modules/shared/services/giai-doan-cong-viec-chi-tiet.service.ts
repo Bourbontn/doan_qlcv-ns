@@ -20,7 +20,7 @@ export class GiaiDoanCongViecChiTietService {
 		private httpParamsHeplerService: HttpParamsHeplerService
 	) { }
 
-	list(filter?: { search?: string }): Observable<chiTietGiaiDoan[]> {
+	list( tinhtrang : number ,filter?: { search?: string }): Observable<chiTietGiaiDoan[]> {
 		let params: HttpParams = new HttpParams();
 		if (filter) {
 			const conditions: OvicConditionParam[] = [

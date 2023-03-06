@@ -45,3 +45,4 @@ export interface OvicDocumentDownloadResult {
 	state : 'REJECTED' | 'ERROR' | 'INVALIDATE' | 'COMPLETED' | 'CANCEL';
 	download : Download;
 }
+

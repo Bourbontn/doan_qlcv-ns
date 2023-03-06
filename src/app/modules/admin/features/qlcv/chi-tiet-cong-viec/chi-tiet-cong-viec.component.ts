@@ -123,7 +123,7 @@ export class ChiTietCongViecComponent implements OnInit {
           );
           this.sumJobs = this.data_gd.reduce((collector, item) => collector += item['data_giaidoan'] ? item['data_giaidoan'].length : 0, 0);
           this.sumJobs_ht = this.data_gd.reduce((collector, item) => collector += (item['data_giaidoan'] && Array.isArray(item['data_giaidoan'])) ? item['data_giaidoan'].filter(r => r['trang_thai'] === 1).length : 0, 0);
-          this.percentValue = this.sumJobs ? ((this.sumJobs_ht / this.sumJobs) *100 ).toFixed() : 0 ;
+          this.percentValue = this.sumJobs ? ((this.sumJobs_ht / this.sumJobs) * 100).toFixed() : 0;
           this.showFinish(this.sumJobs_ht, this.sumJobs, dsCV);
         },
         error: (err: any) => {
@@ -139,11 +139,11 @@ export class ChiTietCongViecComponent implements OnInit {
         if (new Date(f.date_end) > new Date()) {
           f['bg_trangthai'] = 'bg-blue-500';
           f['trangthai_label'] = "Đang diễn ra";
-          if(tong > 0 && tong === hoanthanh){
+          if (tong > 0 && tong === hoanthanh) {
             f['bg_trangthai'] = 'bg-green-500';
             f['trangthai_label'] = "Đã hoàn thành";
           }
-          else{
+          else {
             f['bg_trangthai'] = 'bg-blue-500';
             f['trangthai_label'] = "Đang diễn ra";
           }
@@ -151,7 +151,7 @@ export class ChiTietCongViecComponent implements OnInit {
         else {
           f['bg_trangthai'] = 'bg-red-500';
           f['trangthai_label'] = "Đã quá hạn";
-          if(tong > 0 && tong === hoanthanh){
+          if (tong > 0 && tong === hoanthanh) {
             f['bg_trangthai'] = 'bg-green-500';
             f['trangthai_label'] = "Đã hoàn thành";
           }
@@ -187,7 +187,7 @@ export class ChiTietCongViecComponent implements OnInit {
   //   })
   // }
   backToList() {
-    this.router.navigate(['/admin/cong-viec/thong-ke'])
+    this.router.navigate(['/admin/cong-viec/danh-sach-cong-viec'])
   }
 
   //form gruop 
@@ -300,9 +300,18 @@ export class ChiTietCongViecComponent implements OnInit {
   }
   downloadFile(file: OvicFile) {
     this.notificationService.isProcessing(true);
-    this.fileService.downloadWithProgress(file.id, file.title).subscribe();
-    this.notificationService.isProcessing(false);
+        setTimeout(() => {
+            this.fileService.downloadWithProgress(file.id, file.title).subscribe();
+            this.notificationService.isProcessing(false);
+        }, 1000);
 
+
+        this.data_ctgd.map(
+          r => {
+            
+            return r;
+          }
+        )
   }
 
   // deleteFile(file: OvicFile) {
@@ -336,24 +345,38 @@ export class ChiTietCongViecComponent implements OnInit {
     this.fileChooser.nativeElement.click();
   }
   fileChanges(event) {
-    this.fileUploaded = [];
     if (event.target.files && event.target.files.length) {
       this.fileService.uploadFiles(event.target.files, this.auth.userDonViId, this.auth.user.id).subscribe({
         next: files => {
-          this.formData.get('file_congviec').setValue(files);
-          this.fileUploaded = files;
-          event.target.files = null;
-          this.notificationService.toastSuccess("Upload file thành công");
+          const index = this.data_cv.findIndex(r => r.ma_congviec === this.param_mcv);
+          const uploadedFiles : OvicFile[] = this.data_cv[index].file_congviec || [];
+          const newFiles : OvicFile[] = [].concat(uploadedFiles, files);
+          this.updateFileForJob(this.data_cv[index], newFiles);          
         },
         error: () => {
-          this.notificationService.toastError("Upload file thất bại");
+          this.notificationService.toastError("Thêm file thất bại");
         }
       });
     }
-    
+
+  }
+
+  updateFileForJob(job : DsCongViec,  files : OvicFile[]){
+    this.notificationService.isProcessing(true);
+    this.dsCongViecService.editDanhSach(job.id,{ file_congviec : files}).subscribe({
+      next : ()=>{
+        job.file_congviec = files;
+        this.notificationService.isProcessing(false);
+        this.notificationService.toastSuccess('Cập nhật thành công');
+      },
+      error : ()=>{
+        this.notificationService.isProcessing(false);
+        this.notificationService.toastError('Cập nhật file thất bại');
+      },
+    });
   }
 
 }
 
-//giai đoạn công việc
+
 

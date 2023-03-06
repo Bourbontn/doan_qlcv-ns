@@ -51,7 +51,7 @@ export class ThongKeComponent implements OnInit {
     this.dsCongViecService.list(1, filter).subscribe({
       next: dsChiTiet => {
         this.data_cv = dsChiTiet;
-        this.showStatus(dsChiTiet);
+        // this.showStatus(dsChiTiet);
       },
       error: () => {
         this.notificationService.isProcessing(false);
@@ -109,8 +109,15 @@ export class ThongKeComponent implements OnInit {
                 }
 
                 if (flag) {
-                  cv['bg_trangthai'] = done === sum ? 'bg-green-500' : 'bg-yellow-500';
-                  cv['trangthai_label'] = done === sum ? "Đã hoàn thành" : "Chưa hoàn thành";
+                  if(sum){
+                    cv['bg_trangthai'] = done === sum ? 'bg-green-500' : 'bg-red-500';
+                    cv['trangthai_label'] = done === sum ? "Đã hoàn thành" : "Chưa hoàn thành";
+                  }else{
+                    // sum === 0
+                    cv['bg_trangthai'] = 'bg-blue-500';
+                  cv['trangthai_label'] = "Đang diễn ra";
+                  }
+                 
                 }
               }
 
@@ -131,51 +138,7 @@ export class ThongKeComponent implements OnInit {
       }
     )
   }
-  showFinish(tong, hoanthanh, cv, data) {
-    data.forEach((f, key) => {
-      if (new Date(f.date_start) < new Date()) {
-        if (new Date(f.date_end) > new Date()) {
-          cv['bg_trangthai'] = 'bg-blue-500';
-          cv['trangthai_label'] = "Đang diễn ra";
-          if (tong.length > 0 && tong.length === hoanthanh.length) {
-            cv['bg_trangthai'] = 'bg-green-500';
-            cv['trangthai_label'] = "Đã hoàn thành";
-          }
-        }
-        else {
-          cv['bg_trangthai'] = 'bg-red-500';
-          cv['trangthai_label'] = "Đã quá hạn";
-          if (tong.length > 0 && tong.length === hoanthanh.length) {
-            cv['bg_trangthai'] = 'bg-green-500';
-            cv['trangthai_label'] = "Đã hoàn thành";
-          }
-        }
-      }
-      else {
-        cv['bg_trangthai'] = 'bg-yellow-500';
-        cv['trangthai_label'] = "Chưa bắt đầu";
-      }
-    })
-  }
-
-  showStatus(data) {
-    data.forEach((f, key) => {
-      if (new Date(f.date_start) < new Date()) {
-        if (new Date(f.date_end) > new Date()) {
-          f['bg_trangthai'] = 'bg-blue-500';
-          f['trangthai_label'] = "Đang diễn ra";
-        }
-        else {
-          f['bg_trangthai'] = 'bg-red-500';
-          f['trangthai_label'] = "Đã quá hạn";
-        }
-      }
-      else {
-        f['bg_trangthai'] = 'bg-yellow-500';
-        f['trangthai_label'] = "Chưa bắt đầu";
-      }
-    })
-  }
+ 
 
   toDetails(object: DsCongViec) {
     const code = this.auth.encryptData(`${object.ma_congviec}`);

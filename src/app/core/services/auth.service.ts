@@ -86,9 +86,8 @@ export class AuthService {
 
 	async logout() : Promise<boolean> {
 		try {
-			await lastValueFrom( this.http.post<any>( getRoute( 'logout' ),null ) );
+			await lastValueFrom( this.http.post<any>( getRoute( 'logout' ) , null ) );
 			this.removeSession();
-
 			return Promise.resolve( true );
 		} catch {
 			this.removeSession();
@@ -125,149 +124,144 @@ export class AuthService {
 		localStorage.setItem( REFRESH_TOKEN , token );
 	}
 
-	callRefreshToken() {
-		return this.http.post<Token>( getRoute( 'refresh-token' ) , { 'refresh_token' : this.refreshToken } ).pipe( tap( token => this.accessToken = token.access_token ) );
+	get refreshTokenActor() {
+		return this.http.post<{ data : string }>( getRoute( 'refresh-token' ) , { 'refresh_token' : this.refreshToken } ).pipe( tap( ( { data } ) => this.accessToken = data ) );
 	}
 
 	private startSession( info : Auth | Token ) : Observable<boolean> {
-		let user$ : Observable<User> = null;
-		if ( info.hasOwnProperty( 'access_token' ) ) {
-			user$ = this.saveToken( info as Token );
+		let userInfo$ : Observable<User>;
+		// if ( info.hasOwnProperty( 'access_token' ) ) {
+		if ( 'access_token' in info ) {
+			userInfo$ = this.saveToken( info as Token );
 			this.onSignIn$.next( info[ 'access_token' ] );
 		} else {
-			user$ = this.saveAuth( info as Auth );
+			userInfo$ = this.saveAuth( info as Auth );
 			this.onSignIn$.next( info[ 'session_id' ] );
 		}
+		const loadUserMeta$ : Observable<UserMeta[]>        = this.userService.getUserMeta();
+		const loadUserPermissions$ : Observable<Permission> = this.http.get<Permission>( getRoute( 'permission' ) );
+		return forkJoin<[ User , UserMeta[] , Permission ]>( [ userInfo$ , loadUserMeta$ , loadUserPermissions$ ] ).pipe( tap( ( [ user , meta , { data } ] ) => {
+			this.updateUser( user );
+			// const menu = menus.map( o => {
+			// 	if ( o.id === 'he-thong' ) {
+			// 		o.child = o.child.filter( i => i.id !== 'he-thong/quan-ly-nhom-quyen' );
+			// 	}
+			// 	return o;
+			// } );
 
-		return forkJoin( [
-			user$ ,
-			this.userService.getUserMeta() ,
-			this.http.get<Permission>( getRoute( 'permission' ) )
-		] ).pipe(
-			map( ( [ user , meta , { roles , menus } ] ) => {
-				this.updateUser( user );
-				// const menu = menus.map( o => {
-				// 	if ( o.id === 'he-thong' ) {
-				// 		o.child = o.child.filter( i => i.id !== 'he-thong/quan-ly-nhom-quyen' );
-				// 	}
-				// 	return o;
-				// } );
+			// const a = [
+			// 	{
+			// 		id       : 'dashboard' ,
+			// 		title    : 'Dashboard' ,
+			// 		icon     : 'fa fa-tachometer' ,
+			// 		position : 'left',
+			// 		hide     : false ,
+			// 	} ,
+			// 	{
+			// 		id       : 'he-thong' ,
+			// 		title    : 'Hệ thống' ,
+			// 		icon     : 'fa fa-cogs' ,
+			// 		position : 'left' ,
+			// 		hide     : false ,
+			// 		child    : [
+			// 			{
+			// 				id       : 'he-thong/thong-tin-tai-khoan' ,
+			// 				title    : 'Thông tin tài khoản' ,
+			// 				icon     : 'fa fa-key' ,
+			// 				hide     : false ,
+			// 				position : 'left'
+			// 			} ,
+			// 			{
+			// 				id       : 'he-thong/quan-ly-nhom-quyen' ,
+			// 				title    : 'Quản lý nhóm quyền' ,
+			// 				icon     : 'fa fa-users' ,
+			// 				hide     : false ,
+			// 				position : 'left'
+			// 			} ,
+			// 			{
+			// 				id       : 'he-thong/quan-ly-tai-khoan' ,
+			// 				title    : 'Quản lý tài khoản' ,
+			// 				icon     : 'fa fa-wrench' ,
+			// 				hide     : false ,
+			// 				position : 'left'
+			// 			} ,
+			// 			{
+			// 				id       : 'he-thong/thong-tin-he-thong' ,
+			// 				title    : 'Thông tin hệ thống' ,
+			// 				icon     : 'fa fa-user-circle-o' ,
+			// 				hide     : false ,
+			// 				position : 'left'
+			// 			}
+			// 		]
+			// 	} ,
+			// 	{
+			// 		id       : 'message' ,
+			// 		title    : 'Tin nhắn' ,
+			// 		icon     : 'fa fa-comments-o' ,
+			// 		position : 'left' ,
+			// 		hide     : false ,
+			// 		child    : [
+			// 			{
+			// 				id       : 'message/notifications' ,
+			// 				title    : 'Thông báo' ,
+			// 				icon     : 'fa fa-bell-o' ,
+			// 				hide     : false ,
+			// 				position : 'left'
+			// 			} ,
+			// 			{
+			// 				id       : 'message/notification-details' ,
+			// 				title    : 'Chi tiết Thông báo' ,
+			// 				icon     : 'fa fa-bell-o' ,
+			// 				hide     : true ,
+			// 				position : 'left'
+			// 			} ,
+			// 			{
+			// 				id       : 'message/chat' ,
+			// 				title    : 'Trò chuyện' ,
+			// 				icon     : 'fa fa-commenting-o' ,
+			// 				hide     : false ,
+			// 				position : 'left'
+			// 			}
+			// 		]
+			// 	}
+			// ];
+			//
+			// const defaultFeature = {
+			// 	id       : 'message' ,
+			// 	title    : 'Tin nhắn' ,
+			// 	icon     : 'fa fa-comments-o' ,
+			// 	position : 'left' ,
+			// 	pms      : [ 1 , 1 , 1 , 1 ] ,
+			// 	child    : [
+			// 		{
+			// 			id       : 'message/notifications' ,
+			// 			title    : 'Thông báo' ,
+			// 			icon     : 'fa fa-bell-o' ,
+			// 			position : 'left' ,
+			// 			pms      : [ 1 , 1 , 1 , 1 ]
+			// 		} ,
+			// 		{
+			// 			id       : 'message/chat' ,
+			// 			title    : 'Trò chuyện' ,
+			// 			icon     : 'fa fa-commenting-o' ,
+			// 			position : 'left' ,
+			// 			pms      : [ 1 , 1 , 1 , 1 ]
+			// 		}
+			// 	]
+			// };
+			// menu.push( defaultFeature );
 
-				// const a = [
-				// 	{
-				// 		id       : 'dashboard' ,
-				// 		title    : 'Dashboard' ,
-				// 		icon     : 'fa fa-tachometer' ,
-				// 		position : 'left',
-				// 		hide     : false ,
-				// 	} ,
-				// 	{
-				// 		id       : 'he-thong' ,
-				// 		title    : 'Hệ thống' ,
-				// 		icon     : 'fa fa-cogs' ,
-				// 		position : 'left' ,
-				// 		hide     : false ,
-				// 		child    : [
-				// 			{
-				// 				id       : 'he-thong/thong-tin-tai-khoan' ,
-				// 				title    : 'Thông tin tài khoản' ,
-				// 				icon     : 'fa fa-key' ,
-				// 				hide     : false ,
-				// 				position : 'left'
-				// 			} ,
-				// 			{
-				// 				id       : 'he-thong/quan-ly-nhom-quyen' ,
-				// 				title    : 'Quản lý nhóm quyền' ,
-				// 				icon     : 'fa fa-users' ,
-				// 				hide     : false ,
-				// 				position : 'left'
-				// 			} ,
-				// 			{
-				// 				id       : 'he-thong/quan-ly-tai-khoan' ,
-				// 				title    : 'Quản lý tài khoản' ,
-				// 				icon     : 'fa fa-wrench' ,
-				// 				hide     : false ,
-				// 				position : 'left'
-				// 			} ,
-				// 			{
-				// 				id       : 'he-thong/thong-tin-he-thong' ,
-				// 				title    : 'Thông tin hệ thống' ,
-				// 				icon     : 'fa fa-user-circle-o' ,
-				// 				hide     : false ,
-				// 				position : 'left'
-				// 			}
-				// 		]
-				// 	} ,
-				// 	{
-				// 		id       : 'message' ,
-				// 		title    : 'Tin nhắn' ,
-				// 		icon     : 'fa fa-comments-o' ,
-				// 		position : 'left' ,
-				// 		hide     : false ,
-				// 		child    : [
-				// 			{
-				// 				id       : 'message/notifications' ,
-				// 				title    : 'Thông báo' ,
-				// 				icon     : 'fa fa-bell-o' ,
-				// 				hide     : false ,
-				// 				position : 'left'
-				// 			} ,
-				// 			{
-				// 				id       : 'message/notification-details' ,
-				// 				title    : 'Chi tiết Thông báo' ,
-				// 				icon     : 'fa fa-bell-o' ,
-				// 				hide     : true ,
-				// 				position : 'left'
-				// 			} ,
-				// 			{
-				// 				id       : 'message/chat' ,
-				// 				title    : 'Trò chuyện' ,
-				// 				icon     : 'fa fa-commenting-o' ,
-				// 				hide     : false ,
-				// 				position : 'left'
-				// 			}
-				// 		]
-				// 	}
-				// ];
-				//
-				// const defaultFeature = {
-				// 	id       : 'message' ,
-				// 	title    : 'Tin nhắn' ,
-				// 	icon     : 'fa fa-comments-o' ,
-				// 	position : 'left' ,
-				// 	pms      : [ 1 , 1 , 1 , 1 ] ,
-				// 	child    : [
-				// 		{
-				// 			id       : 'message/notifications' ,
-				// 			title    : 'Thông báo' ,
-				// 			icon     : 'fa fa-bell-o' ,
-				// 			position : 'left' ,
-				// 			pms      : [ 1 , 1 , 1 , 1 ]
-				// 		} ,
-				// 		{
-				// 			id       : 'message/chat' ,
-				// 			title    : 'Trò chuyện' ,
-				// 			icon     : 'fa fa-commenting-o' ,
-				// 			position : 'left' ,
-				// 			pms      : [ 1 , 1 , 1 , 1 ]
-				// 		}
-				// 	]
-				// };
-				// menu.push( defaultFeature );
-
-				if ( APP_CONFIGS.multiLanguage ) {
-					const metaLang = meta.find( m => m.meta_key === APP_CONFIGS.metaKeyLanguage );
-					const lang     = metaLang ? metaLang.meta_value : APP_CONFIGS.defaultLanguage.name;
-					this.storeUserLanguage( lang , false );
-				} else {
-					this.storeUserLanguage( APP_CONFIGS.defaultLanguage.name , false );
-				}
-				this.setUserMeta( meta );
-				this.storeRoles( roles );
-				this.storeUseCases( menus );
-				return true;
-			} )
-		);
+			if ( APP_CONFIGS.multiLanguage ) {
+				const metaLang = meta.find( m => m.meta_key === APP_CONFIGS.metaKeyLanguage );
+				const lang     = metaLang ? metaLang.meta_value : APP_CONFIGS.defaultLanguage.name;
+				this.storeUserLanguage( lang , false );
+			} else {
+				this.storeUserLanguage( APP_CONFIGS.defaultLanguage.name , false );
+			}
+			this.setUserMeta( meta );
+			this.storeRoles( data.roles );
+			this.storeUseCases( data.menus );
+		} ) , map( () => true ) );
 	}
 
 	syncUserMeta() {
@@ -340,7 +334,7 @@ export class AuthService {
 		localStorage.setItem( ACCESS_TOKEN , auth.session_id );
 		localStorage.setItem( EXPIRED_KEY , auth.expires );
 		localStorage.removeItem( REFRESH_TOKEN );
-		return of( auth.user );
+		return of( auth.data );
 	}
 
 	private loadStoredUser() {

@@ -4,7 +4,7 @@ import { Ucase } from '@core/models/ucase';
 export interface Auth {
 	expires : string;
 	session_id : string;
-	user : User;
+	data : User;
 }
 
 export interface Token {
@@ -13,8 +13,10 @@ export interface Token {
 }
 
 export interface Permission {
-	menus : Ucase[];
-	roles : string[]; // list role name
+	data : {
+		menus : Ucase[];
+		roles : string[]; // list role name
+	};
 }
 
 export interface UserSignIn {

@@ -31,7 +31,9 @@
         <ng-container *ngIf="stage['data_chitietgiaidoan']">
             <div *ngFor="let i of stage['data_chitietgiaidoan']">
                 <label class="mb-0 pl-5 py-2 d-flex gap-3 checklist-item">
-                    <input class="form-check-input flex-shrink-0" type="checkbox" value="" [disabled]="i['disabled_tbn']" [(ngModel)]="i['checked']" style="font-size: 1.375em;" (change)="markCompleted(i)">
+                    <input class="form-check-input flex-shrink-0" type="checkbox" value=""
+                        [disabled]="i['disabled_tbn']" [(ngModel)]="i['checked']" style="font-size: 1.375em;"
+                        (change)="markCompleted(i)">
                     <span class="checklist-item-details-text">{{i['chi_tiet_giai_doan']}}</span>
                     <span class="ml-auto">
                         <span [ngClass]="i['bg_trangthai']">{{i['label_trangthai']}}</span>
@@ -61,13 +63,13 @@
                             <textarea id="float-input" rows="3" cols="40" pInputTextarea formControlName="ten_giaidoan"
                                 placeholder="Nhập tiêu đề cho thẻ này..."></textarea>
                         </span>
-                        <!-- <div class="mb-3 inline-block text-xl w-100">
-                            <label class="form-label">Ngày bắt đầu</label>
-                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan">
-                            <label class="form-label">Ngày kết thúc</label>
+                        <!-- <div class="mb-3 inline-block text-xl w-100"> -->
+                        <!-- <label class="form-label">Ngày bắt đầu</label>
+                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan"> -->
+                        <!-- <label class="form-label">Ngày kết thúc</label>
                             <br>
-                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan">
-                        </div> -->
+                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan"> -->
+                        <!-- </div> -->
                     </div>
                 </form>
                 <div class="card-composer-controls">
@@ -82,7 +84,7 @@
     </ng-container>
 </div>
 
-<ng-template #gdFormEdit let-c="close">
+<ng-template #formChitietgd let-c="close">
     <div class="model-header container mt-3">
         <h4 class="modal-title">{{formState_chitietgd.formTitle}}</h4>
     </div>
@@ -92,13 +94,12 @@
                 <div class="col-xl-12">
                     <div class="mb-3 mt-3 mt-xl-0">
                         <label for="projectname" class="form-label text-xl">Tên công việc</label>
-                        <!-- <input type="text" id="projectname" class="form-control capitalize"
-                            placeholder="Nhập tên công việc" formControlName="chi_tiet_giai_doan"> -->
-
                         <textarea class="form-control capitalize" id="project-overview" rows="5"
                             placeholder="Nhập tên công việc....." formControlName="chi_tiet_giai_doan"></textarea>
                     </div>
                     <div class="mb-3 inline-block text-xl w-100">
+                        <!-- <label class="form-label">Ngày bắt đầu</label>
+                            <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan"> -->
                         <label class="form-label">Ngày kết thúc</label>
                         <br>
                         <input id="input_Formedit" class="form-control" type="date" formControlName="ngay_hethan">
@@ -109,163 +110,33 @@
                 <button (click)="updateFormChiTiet()" [disabled]="formData_chitietgd.invalid" pButton pRipple
                     class=" mr-2 max-w-10rem p-button-success" icon="pi pi-save" label="Xác nhận"></button>
                 <button pRipple pButton type="button" class="p-button p-button-danger" icon="pi pi-times"
-                    (click)="btnCancelCTGD()"></button>
+                    (click)="btnCancelGiaiDoan()"></button>
             </div>
         </form>
     </div>
 </ng-template>
 
-
-<!-- dia log here -->
-<!-- <p-dialog header="Thông tin chi tiết" [(visible)]="displayMaximizable" [dismissableMask]="true" [modal]="true"
-    [style]="{width: '50vw'}" [maximizable]="true" [draggable]="false" [resizable]="false">
-    <div class="card-detail-main">
-        <h5 class="-ml-4" *ngFor="let data of data_gdBackup">Giai đoạn: {{data.ten_giaidoan}} </h5>
-        <div class="card-detail-item">
-            <span class="title-icon text-lg pi pi-calendar"></span>
-            <h6 class="checklist-title-text pt-2 text-lg">Ngày hết hạn</h6>
-            <div class="card-detail-due-date">
-                <input class="form-check-input flex-shrink-0" type="checkbox" value=""
-                    (change)="showFinish = !showFinish">
-                    <label *ngIf="noResults === -1" style="font-size: 17px;font-weight: 500;padding: 0px 10px;">Chưa có ngày hết hạn
-                        công tác</label>
-                <div class="card-detail-badge-due-date-react-container">
-                    <div class="js-react-root">
-                        <button class="btn-showdate" type="button" data-testid="due-date-badge-with-date-range-picker" (click)="editNgay_hethan.toggle($event)">
-                            <span>{{ngay | date:"dd/MM/yyyy"}}</span> 
-                            <span class="word-finish" *ngIf="showFinish">hoàn tất</span>
-                            <span [ngClass]="dataChiTietGiaiDoan1['bg_trangthai']">{{dataChiTietGiaiDoan1['trangthai_label']}}</span>
-                            <p-overlayPanel #editNgay_hethan>
-                                <div class="card-composer">
-                                    <form action="" [formGroup]="formData">
-                                        <label for="id-checklist" class="block">Ngày hết hạn</label>
-                                        <input id="input_Formedit" class="form-control w-10rem" type="date">
-                                    </form>
-                                    <div class="card-composer-controls mt-2">
-                                        <input class="bg-blue-500 border-0 text-white mr-2" type="submit"
-                                            value="Lưu">
-                                        <span class="icon_close" (click)="editNgay_hethan.toggle($event)">
-                                            <i class="pi pi-times text-xl"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </p-overlayPanel>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="checklist">
-            <div class="checklist-header">
-                <span class="title-icon text-lg pi pi-check-square"></span>
-                <div class="checklist-header-title w-100 flex">
-                    <h6 class="checklist-title-text text-lg w-100">Việc cần làm</h6>
-                    <button class="nch-button">Xoá</button>
-                </div>
-            </div>
-            <div class="checklist-progress">
-                <p-progressBar [value]="0" [showValue]="false" [style]="{'height': '0.5rem'}"></p-progressBar>
-            </div>
-            <div class="checklist-items-list">
-                <div class="checklist-item" *ngFor="let data_Chitiet of data_ctgd">
-                    <div class="checklist-item-checkbox">
-                        <input class="form-check-input flex-shrink-0 my-2" type="checkbox" value=""
-                            style="font-size: 1.375em;">
-                    </div>
-                    <div class="checklist-item-details">
-                        <div class="checklist-item-text-and-controls">
-                            <span class="checklist-item-details-text">{{data_Chitiet.chi_tiet_giai_doan}}</span>
-                            <div class="checklist-item-controls">
-                                <span class="checklist-item-due">
-                                    <button class="btn-control bg-white" type="button"
-                                        (click)="editNgay_hethan.toggle($event)" (click)="btnEditChiTiet(data_Chitiet)">
-                                        <i class="pi pi-clock p-1 font-semibold"></i>
-                                        <span class="p-1">{{data_Chitiet.ngay_hethan | date:"dd/MM/yyyy"}}</span>
-                                        <span
-                                            [ngClass]="data_Chitiet['bg_trangthai']">{{data_Chitiet['trangthai_label']}}</span>
-
-                                        <p-overlayPanel #editNgay_hethan>
-                                            <div class="card-composer">
-                                                <form action="" [formGroup]="formData_chitietgd">
-                                                    <label for="id-checklist" class="block">Ngày hết hạn</label>
-                                                    <input id="input_Formedit" class="form-control w-10rem" type="date"
-                                                        formControlName="ngay_hethan">
-                                                </form>
-                                                <div class="card-composer-controls mt-2">
-                                                    <input class="bg-blue-500 border-0 text-white mr-2" type="submit"
-                                                        value="Lưu" (click)="updateFormChiTiet()">
-                                                    <span class="icon_close" (click)="editNgay_hethan.toggle($event)">
-                                                        <i class="pi pi-times text-xl"></i>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </p-overlayPanel>
-                                    </button>
-                                </span>
-                                <span class="checklist-item-due hiden-button ml-2">
-                                    <button class="btn-control" type="button">
-                                        <i class="pi pi-times text-lg text-red-500"></i>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="checklist-item-text-edit">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="checklist-newitem">
-                <button class="nch-button mt-2" *ngIf="!showAddlist" (click)="showAddlist = !showAddlist"
-                    (click)="btnAddChiTiet()">Thêm việc cần làm</button>
-                <div class="mt-2" *ngIf="showAddlist">
-                    <div class="">
-                        <form action="" [formGroup]="formData_chitietgd">
-                            <textarea class="checklist-new-item-text p-2" data-autosize="true"
-                                placeholder="Thêm một việc cần làm" style="height: 56px;"
-                                formControlName="chi_tiet_giai_doan">
-                        </textarea>
-                            <input id="input_Formedit" class="form-control w-10rem mb-2" type="date"
-                                formControlName="ngay_hethan">
-                        </form>
-                    </div>
-
-                    <div class="checklist-add-controls">
-                        <button class="nch-button nch-button-primary text-white mr-2" type="button"
-                            (click)="updateFormChiTiet()">Thêm thẻ
-                        </button>
-                        <a class="nch-button nch-button--subtle cancel js-cancel-checklist-item"
-                            (click)="showAddlist = !showAddlist">Huỷ</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+<ng-template #formGd let-c="close">
+    <div class="model-header container mt-3">
+        <h4 class="modal-title">{{formState.formTitle}}</h4>
     </div>
-</p-dialog> -->
-<!-- <label class="px-5 py-2 d-flex gap-3 checklist-item">
-            <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
-            <span class="pt-1 form-checked-content">
-                <ng-container *ngIf="stage['data_chitietgiaidoan']">
-                    <div class="" *ngFor="let i of stage['data_chitietgiaidoan']">
-                        <p>{{ i['id_giaidoan']}}</p>
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
-                        <p>{{ i['chi_tiet_giai_doan']}}</p>
-                        <p>{{ i['ngay_hethan' ]| date:"dd/MM/yyyy"}}</p>
+    <div class="modal-body ovic-modal-body">
+        <form action="" [formGroup]="formData">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="mb-3 mt-3 mt-xl-0">
+                        <label for="projectname" class="form-label text-xl">Tên công việc</label>
+                        <textarea class="form-control capitalize" id="project-overview" rows="5"
+                            placeholder="Nhập tên công việc....." formControlName="ten_giaidoan"></textarea>
                     </div>
-
-                    <div>
-                        <span class="checklist-item-details-text">{{data_Chitiet.chi_tiet_giai_doan}}</span>
-                            <div class="checklist-item-controls">
-                                <span class="checklist-item-due">
-                                    <button class="btn-control bg-white" type="button"
-                                        (click)="editNgay_hethan.toggle($event)" (click)="btnEditChiTiet(data_Chitiet)">
-                                        <i class="pi pi-clock p-1 font-semibold"></i>
-                                        <span class="p-1">{{data_Chitiet.ngay_hethan | date:"dd/MM/yyyy"}}</span>
-                                        <span
-                                            [ngClass]="data_Chitiet['bg_trangthai']">{{data_Chitiet['trangthai_label']}}</span>
-                    </div>
-
-                </ng-container>
-            </span>
-        </label> -->
+                </div>
+            </div>
+            <div class="flex mt-2">
+                <button (click)="updateForm()" [disabled]="formData.invalid" pButton pRipple
+                    class=" mr-2 max-w-10rem p-button-success" icon="pi pi-save" label="Xác nhận"></button>
+                <button pRipple pButton type="button" class="p-button p-button-danger" icon="pi pi-times"
+                    (click)="btnCancelCTGD()"></button>
+            </div>
+        </form>
+    </div>
+</ng-template>
