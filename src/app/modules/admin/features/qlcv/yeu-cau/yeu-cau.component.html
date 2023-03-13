@@ -18,7 +18,7 @@
         icon="pi pi-plus" (click)="btnAdd()"></button> -->
     <!-- <button *ngIf="!selectAll" pButton pRipple type="button" label="Phê duyệt tất cả"
       class="h-2rem mt-3 ml-2 p-button-success" icon="pi pi-check" iconPos="right"></button> -->
-    <div class="ml-auto my-2">
+    <div class="ml-auto my-2" *ngIf="permission.isExpert">
       <button [disabled]="dataSelection && dataSelection.length? false: true" pButton pRipple type="button"
         label="Phê duyệt" class="h-2rem  ml-2 p-button-success" icon="pi pi-check" iconPos="right"
         (click)="approve()"></button>
@@ -34,8 +34,8 @@
       styleClass="p-datatable-customers" [selectionPageOnly]="true" [rowHover]="true" [rows]="11" [paginator]="true">
       <ng-template pTemplate="header">
         <tr >
-          <th class="table_request" style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-          <th class="table_request" style="width: 3rem"></th>
+          <th *ngIf="permission.isExpert" class="table_request" style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+          <th *ngIf="permission.isExpert" class="table_request" style="width: 3rem"></th>
           <th class="table_request" pSortableColumn="tendexuat">Tên đề xuất </th>
           <th class="table_request" pSortableColumn="nguoidexuat">Người đề xuất </th>
           <th class="table_request" pSortableColumn="phongban">Phòng ban </th>
@@ -46,10 +46,10 @@
       </ng-template>
       <ng-template pTemplate="body" let-yeucau>
         <tr class="p-selectable-row">
-          <td>
+          <td *ngIf="permission.isExpert">
             <p-tableCheckbox [value]="yeucau"></p-tableCheckbox>
           </td>
-          <td>
+          <td *ngIf="permission.isExpert">
             <button pButton pRipple type="button" icon="pi pi-file-edit" (click)="btnEdit(yeucau)"
               class="p-button-rounded p-button-text p-button-plain"></button>
           </td>

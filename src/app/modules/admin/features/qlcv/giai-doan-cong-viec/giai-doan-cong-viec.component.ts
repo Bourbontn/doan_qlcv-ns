@@ -42,7 +42,12 @@ export class GiaiDoanCongViecComponent implements OnInit {
   ) { this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData()); }
 
   public id_gdoan: number;
-
+  permission = {
+    isExpert: false,
+    canAdd: false,
+    canEdit: false,
+    canDelete: false,
+  }
   ngOnInit(): void {
     this.activatedRoute.queryParams
       .subscribe(params => {
@@ -50,6 +55,11 @@ export class GiaiDoanCongViecComponent implements OnInit {
       }
       );
     this.loadData();
+    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role === 'dans_lanh_dao', false);
+    this.permission.isExpert = isStaffExpert;
+    this.permission.canAdd = isStaffExpert;
+    this.permission.canEdit = isStaffExpert;
+    this.permission.canDelete = isStaffExpert;
   }
 
   loadData() {

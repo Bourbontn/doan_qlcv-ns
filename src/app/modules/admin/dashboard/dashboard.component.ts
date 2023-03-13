@@ -123,14 +123,14 @@ export class DashboardComponent implements OnInit {
 		const t                 = lang ? lang.translations.route : null;
 		let result : MenuItem[] = [];
 		if ( data.length ) {
-			data.forEach( node => {
+			data.filter( u => u.position === 'left').forEach( node => {
 				const menu = {
 					label : t && t.hasOwnProperty( node.id ) ? t[ node.id ] : node.title ,
 					icon  : node.icon
 				};
 				if ( node.child && node.child.length ) {
 					menu[ 'items' ] = [];
-					node.child.forEach( nodeChild => {
+					node.child.filter( u => u.position === 'left').forEach( nodeChild => {
 						menu[ 'items' ].push( {
 							label      : t && t.hasOwnProperty( nodeChild.id ) ? t[ nodeChild.id ] : nodeChild.title ,
 							icon       : nodeChild.icon ,

@@ -24,7 +24,12 @@ export class YeuCauComponent implements OnInit {
   selectAll;
   selectCheckBox;
   dataSelection: DanhSachYeuCau[];
-
+  permission = {
+    isExpert: false,
+    canAdd: false,
+    canEdit: false,
+    canDelete: false,
+  }
   trangthai = [
     { label: 'Đang chờ duyệt', value: 'pending' },
     { label: 'Đã phê duyệt', value: 'approved' },
@@ -69,6 +74,11 @@ export class YeuCauComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
     this.getDvPhongBan();
+    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role === 'dans_lanh_dao', false);
+    this.permission.isExpert = isStaffExpert;
+    this.permission.canAdd = isStaffExpert;
+    this.permission.canEdit = isStaffExpert;
+    this.permission.canDelete = isStaffExpert;
   }
 
   loadData() {

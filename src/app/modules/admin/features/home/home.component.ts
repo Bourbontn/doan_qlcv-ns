@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DropdownOptions } from '@shared/models/dropdown-options';
-import { debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
+import { concat, debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
 import { AutoUnsubscribeOnDestroy } from '@core/utils/decorator';
 import { NotificationService } from '@core/services/notification.service';
 import { HelperService } from '@core/services/helper.service';
@@ -76,7 +76,6 @@ export class HomeComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.loadData();
-		this.hello();
 		this.basicData = {
 			labels: ['Tháng', 'Năm',],
 			datasets: [
@@ -166,30 +165,5 @@ export class HomeComponent implements OnInit {
 		this.router.navigate(['/admin/cong-viec/quan-ly-tai-lieu'])
 	}
 	
-	students = [
-		{
-			id: 1,
-			name: ' nguyen van a',
-			courese: 'k45'
-		},
-		{
-			id: 2,
-			name: ' nguyen van b',
-			courese: 'k41'
-		},
-		{
-			id: 3,
-			name: ' nguyen van c',
-			courese: 'k45'
-		}
-	];
-	
-	hello(){
-		const a = this.students.filter(r=> r.courese === 'k45');
-		const b = this.students.map(r => r.name)
-		console.log(b);
-		
-	}
-
 
 }

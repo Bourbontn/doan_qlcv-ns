@@ -1,7 +1,7 @@
 <div class="ovic-student-library intro-x" [class.fileover]="showUploadPanel" (contextmenu)="disableContextMenu($event)">
     <div class="ovic-student-library__inner position-relative p-0" ovicDropAndDrag>
         <div class="ovic-student-library__left-sidebar transition--slow-ease-out">
-            <h3 class="ovic-student-library__left-sidebar__head">CLOUD
+            <h3 class="ovic-student-library__left-sidebar__head">Danh mục
             </h3>
             <!-- <div class="ovic-student-library__left-sidebar__body">
                 <button class="btn ovic-student-library__left-sidebar__button intro-y"
@@ -18,11 +18,11 @@
             <div class="ovic-student-library__left-sidebar__foot">
                 <ul class="ovic-student-library__student-classes">
                     <li class="ovic-student-library__student-classes__element intro-y" *ngFor="let c of studentClasses">
-                        <button class="btn ovic-student-library__classes-info" (click)="activeStudentClasses(c)"
+                        <button class="btn ovic-student-library__classes-info" (click)="activeStudentClasses()" 
                             [class.ovic-student-library__classes-info--active]="c['__active']">
-                            <span class="ovic-student-library__classes-info__code">{{c['__custom_name']}}</span>
+                            <span class="ovic-student-library__classes-info__code">{{c.name}}</span>
                             <i class="ovic-student-library__classes-info__name">{{c['kyhieu']}}</i>
-                            <span class="ovic-student-library__classes-info__name">Phòng ban: {{c['__teacher']}}</span>
+                            <!-- <span class="ovic-student-library__classes-info__name">Phòng ban: {{c['__teacher']}}</span> -->
                         </button>
                     </li>
                 </ul>
@@ -58,7 +58,7 @@
                             </svg>
                         </button>
                     </div> -->
-                    <button
+                    <!-- <button
                         class="btn osl-button-mode osl-button-mode--grid ovic-student-library__right-panel__head__btn"
                         [class.ovic-student-library__right-panel__head__btn--active]="!listModeActivated"
                         (click)="activeListMode(false)">
@@ -69,7 +69,7 @@
                         [class.ovic-student-library__right-panel__head__btn--active]="listModeActivated"
                         (click)="activeListMode(true)">
                         <i class="fa fa-th-list" aria-hidden="true"></i>
-                    </button>
+                    </button> -->
 
                 </div>
             </div>
@@ -78,10 +78,9 @@
             <div class="ovic-student-library__right-panel__body">
                 <div class="ovic-student-library__right-panel__body__inner">
                     <ng-container *ngIf="!emptyStore && library === 'MY_DOCUMENT'">
-                        <!-- <app-outlet-tailieu #child></app-outlet-tailieu> -->
                         <p class="--empty-message" *ngIf="!documentPack">Chọn công việc</p>
                         <ul class="m-0 p-0" style="list-style: none" *ngIf="documentPack">
-                            <li class="intro-y">
+                            <!-- <li class="intro-y">
                                 <div class="ovic-document-list__wrap intro-y" *ngIf="!hiddenLayout">
                                     <h4 class="ovic-document-list__title intro-y" *ngFor="let listFile of data_cv">Tài
                                         liệu công việc</h4>
@@ -122,7 +121,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </li>
+                            </li> -->
                         </ul>
                     </ng-container>
                 </div>
@@ -131,31 +130,3 @@
         </div>
     </div>
 </div>
-<ng-template #userMenu let-item>
-    <div class="ovic-right-context-menu" [class.submenu-open-left]="subMenuOpenLeft"
-        (contextmenu)="disableContextMenu($event)">
-        <ul class="ovic-right-context-menu__nav">
-            <li class="ovic-right-context-menu__nav-elm">
-                <button class="btn ovic-right-context-menu__btn-nav" href="#">
-                    <i class="fa fa-i-cursor" aria-hidden="true"></i><span>Đổi tên</span>
-                </button>
-            </li>
-            <li class="ovic-right-context-menu__nav-elm">
-                <button class="btn ovic-right-context-menu__btn-nav" href="#">
-                    <i class="fa fa-eye" aria-hidden="true"></i><span>Xem trước</span>
-                </button>
-            </li>
-            <li class="ovic-right-context-menu__nav-elm">
-                <button class="btn ovic-right-context-menu__btn-nav" href="#">
-                    <i class="fa fa-info-circle" aria-hidden="true"></i><span>Chi tiết</span>
-                </button>
-            </li>
-            <li class="ovic-right-context-menu__nav-elm">
-                <button class="btn ovic-right-context-menu__btn-nav" href="#">
-                    <i class="fa fa-cloud-download" aria-hidden="true"></i><span>Tải xuống</span>
-                </button>
-            </li>
-        </ul>
-    </div>
-</ng-template>
-<!--end right context menu template -->

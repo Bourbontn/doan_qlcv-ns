@@ -116,7 +116,6 @@ export class TaiLieuComponent implements OnInit {
     // _fileRunning : OvicDriveFile;
 
     idFileEditName = '';
-
     @ViewChild('userMenu') userMenu: TemplateRef<any>;
 
     isMobile = false;
@@ -252,11 +251,9 @@ export class TaiLieuComponent implements OnInit {
         this.fileService.getImageContent(file.id.toString(10)).subscribe({
             next: blob => {
                 window.open(blob, '_blank',);
-
             },
-            error: () => { },
+            error: () => {},
         });
-
     }
 
 

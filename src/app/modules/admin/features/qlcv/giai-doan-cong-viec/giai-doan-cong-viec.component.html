@@ -9,7 +9,7 @@
                     <span>{{stage['count_giaidoan']}}</span>
                 </i>
                 <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="selectGiaiDoan"
-                    class="border-0 bg-transparent  my-0  p-1"></button>
+                    class="border-0 bg-transparent  my-0  p-1" *ngIf="permission.canEdit"></button>
                 <mat-menu #selectGiaiDoan="matMenu" xPosition="before">
                     <button mat-menu-item (click)="btnAddCTGD(stage.id)">
                         <mat-icon>add</mat-icon>
@@ -40,7 +40,7 @@
                         <span [ngClass]="i['bg_ngayhethan']">{{i['label_ngayhethan']}}</span>
                         <i class="pi pi-clock p-1 font-semibold"></i>
                         {{i['ngay_hethan']| date:"dd/MM/yyyy"}}
-                        <span class="checklist-item-due hiden-button ml-2">
+                        <span class="checklist-item-due hiden-button ml-2" *ngIf="permission.canDelete">
                             <button class="btn-control" type="button" (click)="delete_CTGD(i)">
                                 <i class="pi pi-times text-lg text-red-500"></i>
                             </button>

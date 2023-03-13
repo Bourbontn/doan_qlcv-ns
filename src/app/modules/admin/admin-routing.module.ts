@@ -29,6 +29,10 @@ const routes : Routes = [
 				loadChildren : () => import('@modules/admin/features/he-thong/he-thong.module').then( m => m.HeThongModule )
 			} ,
 			{
+				path: 'danhmuc',
+				loadChildren: () => import('@modules/admin/features/danhmuc/danhmuc.module').then(m => m.DanhmucModule)
+			  },
+			{
 				path         : 'cong-viec' ,
 				loadChildren : () => import('@modules/admin/features/qlcv/qlcv.module').then( m => m.QlcvModule )
 			} ,

@@ -3,7 +3,7 @@
     <div class="row mb-1 px-3">
         <div>
             <h5 class="page-title intro-x mb-3">Danh sách công việc</h5>
-            <a class="p-2" (click)="state = !state"><i class="pi pi-plus"></i>
+            <a class="p-2" *ngIf="permission.canAdd" (click)="state = !state"><i class="pi pi-plus"></i>
                 Tạo mới công việc</a>
         </div>
         <div class="my-0 ml-auto mr-3">
