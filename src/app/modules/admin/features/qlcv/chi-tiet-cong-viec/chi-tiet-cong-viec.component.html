@@ -12,10 +12,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="text-2xl capitalize text-primary">{{chitietCV.tenproject}}</div>
-                        <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
-                            class="border-0 bg-transparent  my-0 ml-auto px-4" *ngIf="permission.canEdit" ></button>
-
-                        <mat-menu #beforeMenu="matMenu" xPosition="before">
+                        <button *ngIf="permission.canAdd" pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="beforeMenu"
+                            class="border-0 bg-transparent  my-0 ml-auto px-4" ></button>
+                        <mat-menu  #beforeMenu="matMenu" xPosition="before">
                             <button mat-menu-item (click)="btnEdit(chitietCV)">
                                 <mat-icon>edit</mat-icon>
                                 <span>Sửa</span>
@@ -113,8 +112,8 @@
                         <button class="nch-button ml-auto" (click)="myUploader()" *ngIf="permission.canAdd">Thêm tài liệu</button>
                         <input class="d-none " #fileChooser type="file" multiple="true" (change)="fileChanges($event)">
                     </div>
-                    <div>
-                        <ul class="ovic-document-list__file-list" *ngFor="let chitietCV of data_cv">
+                    <div class="list-file">
+                        <ul class="ovic-document-list__file-list mr-3" *ngFor="let chitietCV of data_cv">
                             <li class="ovic-document-list__file-elm" *ngFor="let files of chitietCV.file_congviec">
                                 <button type="button" class="ovic-document-list__info">
                                     <span class="ovic-document-list__file-icon ovic-filetext-icon"></span>

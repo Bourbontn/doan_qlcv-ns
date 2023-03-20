@@ -17,7 +17,7 @@
         </div>
     </div>
     <!-- end page title -->
-    <div class="row pr-3">
+    <div class="row pr-2 pl-2">
         <div class="card_list my-2" *ngFor="let qlcv of data_cv" (click)="toDetails(qlcv)">
             <!-- project card -->
             <div class="card border-0">
@@ -43,9 +43,9 @@
                     <div class="p-1 text-lg white-space-nowrap overflow-hidden text-overflow-ellipsis"
                         style="width: 85%">Phòng ban: <span class="font-medium">{{qlcv.phongban}}</span>
                     </div>
-                    <h6 class="p-1 text-sm mt-2"> Ngày bắt đầu: <span>{{qlcv.date_start | date: " dd/MM/yyyy"}}</span>
+                    <h6 class="p-1 text-sm mt-2"> <i class="pi pi-calendar"></i> Ngày bắt đầu: <span>{{qlcv.date_start | date: " dd/MM/yyyy"}}</span>
                     </h6>
-                    <h6 class="p-1 text-sm mt-2"> Ngày kết thúc: {{qlcv.date_end | date: " dd/MM/yyyy"}}</h6>
+                    <h6 class="p-1 text-sm mt-2"> <i class="pi pi-clock"></i> Ngày kết thúc: {{qlcv.date_end | date: " dd/MM/yyyy"}}</h6>
                     <!-- <div class="my-2 ost-label__inner text-white text-center p-2" [ngClass]="qlcv['bg_trangthai']">
                         {{qlcv['trangthai_label']}}</div> -->
                     <!-- <div class="my-2 text-base white-space-nowrap overflow-hidden text-overflow-ellipsis">
@@ -88,7 +88,7 @@
         </div>
     </div>
 
-    <mat-paginator class="mt-2"  (page)="changesPage($event)" [pageIndex]="pageIndex"  [length]="pageNumber"
+    <mat-paginator class="mt-1"  (page)="changesPage($event)" [pageIndex]="pageIndex"  [length]="pageNumber"
         [pageSize]="pageSize" hidePageSize showFirstLastButtons aria-label="Select page">
     </mat-paginator>
 </div>

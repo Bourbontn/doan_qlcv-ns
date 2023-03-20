@@ -70,7 +70,10 @@ export class DanhSachCongViecComponent implements OnInit {
   ngOnInit(): void {
     this.loadData_2();
     this.getDvPhongBan();
-    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role === 'dans_lanh_dao', false);
+    console.log(this.auth.roles);
+    
+    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role['name'] === 'dans_lanh_dao', false);
+
     this.permission.isExpert = isStaffExpert;
     this.permission.canAdd = isStaffExpert;
     this.permission.canEdit = isStaffExpert;

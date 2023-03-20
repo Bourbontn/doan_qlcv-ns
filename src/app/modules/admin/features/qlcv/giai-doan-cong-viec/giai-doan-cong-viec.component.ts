@@ -55,7 +55,7 @@ export class GiaiDoanCongViecComponent implements OnInit {
       }
       );
     this.loadData();
-    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role === 'dans_lanh_dao', false);
+    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role['name'] === 'dans_lanh_dao', false);
     this.permission.isExpert = isStaffExpert;
     this.permission.canAdd = isStaffExpert;
     this.permission.canEdit = isStaffExpert;

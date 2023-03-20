@@ -9,17 +9,17 @@
                     <span>{{stage['count_giaidoan']}}</span>
                 </i>
                 <button pButton icon="pi pi-ellipsis-h text-color" mat-button [matMenuTriggerFor]="selectGiaiDoan"
-                    class="border-0 bg-transparent  my-0  p-1" *ngIf="permission.canEdit"></button>
+                    class="border-0 bg-transparent  my-0  p-1"></button>
                 <mat-menu #selectGiaiDoan="matMenu" xPosition="before">
                     <button mat-menu-item (click)="btnAddCTGD(stage.id)">
                         <mat-icon>add</mat-icon>
                         <span>Thêm công việc</span>
                     </button>
-                    <button mat-menu-item (click)="btnEditGiaiDoan(stage)">
+                    <button *ngIf="permission.canAdd" mat-menu-item (click)="btnEditGiaiDoan(stage)">
                         <mat-icon>edit</mat-icon>
                         <span>Sửa giai đoạn công việc</span>
                     </button>
-                    <button mat-menu-item (click)="delete_GD(stage)">
+                    <button *ngIf="permission.canAdd"  mat-menu-item (click)="delete_GD(stage)">
                         <mat-icon>delete</mat-icon>
                         Xoá
                     </button>
@@ -52,7 +52,7 @@
     </div>
 </div>
 <div class="add_list_work flex mt-3">
-    <a class="text-base ml-auto" (click)="btnAddGiaiDoan()" (click)="addStage.toggle($event)"><i
+    <a class="text-base ml-auto" *ngIf="permission.canAdd" (click)="btnAddGiaiDoan()" (click)="addStage.toggle($event)"><i
             class="pi pi-plus"></i>Thêm giai đoạn</a>
     <ng-container>
         <p-overlayPanel #addStage>

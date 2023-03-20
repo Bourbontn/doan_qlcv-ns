@@ -133,12 +133,14 @@
 .container_left::-webkit-scrollbar {
   display: none;
 }
+
 .project_card {
   position: relative;
   width: 100%;
   padding-right: 7px;
   padding-left: 15px;
 }
+
 @media (min-width: 992px) {
   .project_card {
     flex: 0 0 74.666667%;
@@ -175,3 +177,18 @@
   text-decoration: none;
 }
 
+.list-file {
+  height: 410px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.list-file::-webkit-scrollbar {
+  width: 5px;
+}
+/* .list-file::-webkit-scrollbar-track {
+  background-color: gray;
+} */
+.list-file::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 5px;
+}

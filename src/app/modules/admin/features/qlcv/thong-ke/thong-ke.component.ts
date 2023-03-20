@@ -7,7 +7,7 @@ import { chiTietGiaiDoan, giaiDoanCongViec } from '@modules/shared/models/giai-d
 import { DsCongViecService } from '@modules/shared/services/ds-cong-viec.service';
 import { GiaiDoanCongViecChiTietService } from '@modules/shared/services/giai-doan-cong-viec-chi-tiet.service';
 import { GiaiDoanCongViecService } from '@modules/shared/services/giai-doan-cong-viec.service';
-import { forkJoin } from 'rxjs';
+import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-thong-ke',
@@ -16,7 +16,7 @@ import { forkJoin } from 'rxjs';
 })
 export class ThongKeComponent implements OnInit {
   @Output() needReloadData = new EventEmitter<string>();
-
+  search = '';
   param_mcv: string = '';
   data_cv: DsCongViec[];
   data_cv1: DsCongViec[];
@@ -25,7 +25,8 @@ export class ThongKeComponent implements OnInit {
   sumJobs = 0;
   sumJobs_ht = 0;
   percentValue: any = 0;
-
+  
+  private OBSERVER_SEARCH_DATA = new Subject<string>();
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -34,7 +35,9 @@ export class ThongKeComponent implements OnInit {
     private giaiDoanCongViecChiTietService: GiaiDoanCongViecChiTietService,
     private notificationService: NotificationService,
 
-  ) { }
+  ) {
+    this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData_2());
+   }
 
   ngOnInit(): void {
     // this.loadData();
@@ -59,12 +62,11 @@ export class ThongKeComponent implements OnInit {
       }
     });
   }
-  j: any;
   loadData_2() {
-    const filter = this.param_mcv ? { search: this.param_mcv.trim() } : null;
+    const filters = this.search ? { search: this.search.trim() } : null;
     forkJoin([
-      this.dsCongViecService.list(1, filter),
-      this.giaiDoanCongViecService.list(1, filter),
+      this.dsCongViecService.list(1, filters),
+      this.giaiDoanCongViecService.list(1, filters),
       this.giaiDoanCongViecChiTietService.get_list_CTGD_count(),
     ]).subscribe(
       {
@@ -129,8 +131,6 @@ export class ThongKeComponent implements OnInit {
               return cv;
             }
           );
-          console.log(this.data_cv1);
-
         },
         error: (err: any) => {
           this.notificationService.isProcessing(false);
@@ -147,5 +147,8 @@ export class ThongKeComponent implements OnInit {
     //   this.router.createUrlTree(['/admin/cong-viec/chi-tiet-cong-viec'], { queryParams: { code } })
     // );
     // console.log(code);
+  }
+  searchData() {
+    this.OBSERVER_SEARCH_DATA.next(this.search);
   }
 }

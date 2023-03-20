@@ -30,9 +30,11 @@ export class YeuCauComponent implements OnInit {
     canEdit: false,
     canDelete: false,
   }
+  nhan_vien = false;
   trangthai = [
     { label: 'Đang chờ duyệt', value: 'pending' },
     { label: 'Đã phê duyệt', value: 'approved' },
+    { label: 'Đã huỷ duyệt', value: 'unapproved' },
   ]
 
   formState: {
@@ -74,7 +76,9 @@ export class YeuCauComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
     this.getDvPhongBan();
-    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role === 'dans_lanh_dao', false);
+    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role['name'] === 'dans_lanh_dao', false);
+    const isStaff = this.auth.roles.reduce((collector, role) => collector || role['name'] === 'dans_nhan_vien', false);
+    this.nhan_vien = isStaff;
     this.permission.isExpert = isStaffExpert;
     this.permission.canAdd = isStaffExpert;
     this.permission.canEdit = isStaffExpert;
@@ -105,18 +109,22 @@ export class YeuCauComponent implements OnInit {
 
   showStatus(data) {
     data.forEach((f, key) => {
-      if (f.trangthai === "pending") {
-        f['bg_trangthai'] = 'bg-blue-500';
-        f['trangthai_label'] = "Đang chờ duyệt";
-
+      if (f.trangthai === "unapproved") {
+        f['bg_trangthai'] = 'bg-red-500';
+        f['trangthai_label'] = "Đã huỷ duyệt";        
       }
       if (f.trangthai === "approved") {
         f['bg_trangthai'] = 'bg-green-500';
         f['trangthai_label'] = "Đã phê duyệt";
       }
+      if (f.trangthai === "pending") {
+        f['bg_trangthai'] = 'bg-blue-500 ';
+        f['trangthai_label'] = "Đang chờ duyệt";
+      }
       // else{
-      //   f['bg_trangthai'] = 'bg-yellow-500';
-      //   f['trangthai_label'] = "Đã huỷ";
+        
+      //   f['bg_trangthai'] = 'bg-blue-500 ';
+      //   f['trangthai_label'] = "Đang chờ duyệt";
       // }
     })
 
@@ -235,7 +243,7 @@ export class YeuCauComponent implements OnInit {
       let i = 0;
       this.dataSelection.forEach((f, key) => {
         setTimeout(() => {
-          this.yeuCauService.edit(f.id.toString(), { trangthai: 'pending' }).subscribe(() => {
+          this.yeuCauService.edit(f.id.toString(), { trangthai: 'unapproved' }).subscribe(() => {
             i = i + 1;
             if (i === this.dataSelection.length) {
               this.notificationService.toastSuccess('Thành công');

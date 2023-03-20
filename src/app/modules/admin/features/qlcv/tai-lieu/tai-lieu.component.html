@@ -80,31 +80,43 @@
                     <ng-container *ngIf="!emptyStore && library === 'MY_DOCUMENT'">
                         <!-- <app-outlet-tailieu #child></app-outlet-tailieu> -->
                         <p class="--empty-message" *ngIf="!documentPack">Chọn công việc</p>
-                        <ul class="m-0 p-0" style="list-style: none" *ngIf="documentPack">
+                        <ul class="m-0 p-0 " style="list-style: none" *ngIf="documentPack">
                             <li class="intro-y">
                                 <div class="ovic-document-list__wrap intro-y" *ngIf="!hiddenLayout">
-                                    <h4 class="ovic-document-list__title intro-y" *ngFor="let listFile of data_cv">Tài
-                                        liệu công việc</h4>
-                                    <ul class="--elements-style-grid ovic-document-list__file-list intro-x"
+                                    <div class="flex">
+                                        <h4 class="ovic-document-list__title intro-y" *ngFor="let listFile of data_cv">
+                                            Tài liệu công việc</h4>
+                                        <button class="nch-button ml-auto" (click)="myUploader()"
+                                          *ngIf="permission.canAdd">Thêm tài liệu</button>
+                                        <input class="d-none " #fileChooser type="file" multiple="true"
+                                            (change)="fileChanges($event)">
+                                    </div>
+                                    <ul class="--elements-style-grid ovic-document-list__file-list intro-x flex flex-wrap " 
                                         *ngFor="let listFile of data_cv">
-                                        <li class="ovic-document-list__file-elm"
+                                        <li class="ovic-document-list__file-elm " style="max-width: 100px;"
                                             *ngFor="let files of listFile.file_congviec">
                                             <button type="button" class="ovic-document-list__info"
                                                 (click)="openFilre(files)">
                                                 <span class="ovic-document-list__file-icon ovic-img-icon"></span>
-                                                <span class="ovic-document-list__file-name">{{files.title}}</span>
+                                                <span class="ovic-document-list__file-name title-name">{{files.title}}</span>
                                             </button>
                                             <button type="button" class="ovic-document-list__download-icon"
                                                 (click)="downloadFile(files)">
                                                 <i aria-hidden="true" class="fa fa-download"></i>
-                                                tải xuống
+                                                <span class="ml-2">tải xuống</span> 
                                             </button>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="ovic-document-list__wrap intro-y" *ngIf="hiddenLayout">
-                                    <h4 class="ovic-document-list__title intro-y" *ngFor="let listFile of data_cv">Tài
-                                        liệu công việc</h4>
+                                    <div class="flex">
+                                        <h4 class="ovic-document-list__title intro-y" *ngFor="let listFile of data_cv">
+                                            Tài liệu công việc</h4>
+                                        <button class="nch-button ml-auto" (click)="myUploader()"
+                                          *ngIf="permission.canAdd">Thêm tài liệu</button>
+                                        <input class="d-none " #fileChooser type="file" multiple="true"
+                                            (change)="fileChanges($event)">
+                                    </div>
                                     <ul class="--elements-style-grid ovic-document-list__file-list1 intro-x"
                                         *ngFor="let listFile of data_cv">
                                         <li class="ovic-document-list__file-elm1"
@@ -117,7 +129,7 @@
                                             <button type="button" class="ovic-document-list__download-icon1"
                                                 (click)="downloadFile(files)">
                                                 <i aria-hidden="true" class="fa fa-download"></i>
-                                                tải xuống
+                                                <span class="ml-2">tải xuống</span> 
                                             </button>
                                         </li>
                                     </ul>

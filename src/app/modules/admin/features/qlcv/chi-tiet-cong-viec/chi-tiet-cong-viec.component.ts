@@ -86,7 +86,8 @@ export class ChiTietCongViecComponent implements OnInit {
     // this.loadData();
     this.getDvPhongBan();
     this.loadData_2();
-    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role === 'dans_lanh_dao', false);
+    const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role['name'] === 'dans_lanh_dao', false);
+    
     this.permission.isExpert = isStaffExpert;
     this.permission.canAdd = isStaffExpert;
     this.permission.canEdit = isStaffExpert;
@@ -310,18 +311,18 @@ export class ChiTietCongViecComponent implements OnInit {
   }
   downloadFile(file: OvicFile) {
     this.notificationService.isProcessing(true);
-        setTimeout(() => {
-            this.fileService.downloadWithProgress(file.id, file.title).subscribe();
-            this.notificationService.isProcessing(false);
-        }, 1000);
+    setTimeout(() => {
+      this.fileService.downloadWithProgress(file.id, file.title).subscribe();
+      this.notificationService.isProcessing(false);
+    }, 1000);
 
 
-        this.data_ctgd.map(
-          r => {
-            
-            return r;
-          }
-        )
+    this.data_ctgd.map(
+      r => {
+
+        return r;
+      }
+    )
   }
 
   // deleteFile(file: OvicFile) {
@@ -359,27 +360,26 @@ export class ChiTietCongViecComponent implements OnInit {
       this.fileService.uploadFiles(event.target.files, this.auth.userDonViId, this.auth.user.id).subscribe({
         next: files => {
           const index = this.data_cv.findIndex(r => r.ma_congviec === this.param_mcv);
-          const uploadedFiles : OvicFile[] = this.data_cv[index].file_congviec || [];
-          const newFiles : OvicFile[] = [].concat(uploadedFiles, files);
-          this.updateFileForJob(this.data_cv[index], newFiles);          
+          const uploadedFiles: OvicFile[] = this.data_cv[index].file_congviec || [];
+          const newFiles: OvicFile[] = [].concat(uploadedFiles, files);
+          this.updateFileForJob(this.data_cv[index], newFiles);
         },
         error: () => {
           this.notificationService.toastError("Thêm file thất bại");
         }
       });
     }
-
   }
 
-  updateFileForJob(job : DsCongViec,  files : OvicFile[]){
+  updateFileForJob(job: DsCongViec, files: OvicFile[]) {
     this.notificationService.isProcessing(true);
-    this.dsCongViecService.editDanhSach(job.id,{ file_congviec : files}).subscribe({
-      next : ()=>{
+    this.dsCongViecService.editDanhSach(job.id, { file_congviec: files }).subscribe({
+      next: () => {
         job.file_congviec = files;
         this.notificationService.isProcessing(false);
         this.notificationService.toastSuccess('Cập nhật thành công');
       },
-      error : ()=>{
+      error: () => {
         this.notificationService.isProcessing(false);
         this.notificationService.toastError('Cập nhật file thất bại');
       },

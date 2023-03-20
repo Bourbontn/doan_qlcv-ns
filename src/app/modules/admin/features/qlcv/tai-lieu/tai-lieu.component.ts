@@ -1,7 +1,9 @@
 import { state, style, trigger } from '@angular/animations';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, Input, ViewChild, ElementRef, SimpleChanges, OnChanges, TemplateRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { OvicFile, OvicDocumentDownloadResult, OvicDocumentTypes } from '@core/models/file';
+import { AuthService } from '@core/services/auth.service';
 import { FileService } from '@core/services/file.service';
 import { HelperService } from '@core/services/helper.service';
 import { NotificationService } from '@core/services/notification.service';
@@ -60,6 +62,13 @@ export class TaiLieuComponent implements OnInit {
 
     showClearSearch = false;
     @ViewChild('searchText') searchInput: ElementRef;
+    @ViewChild('fileChooser') fileChooser: ElementRef<HTMLInputElement>;
+    permission = {
+        isExpert: false,
+        canAdd: false,
+        canEdit: false,
+        canDelete: false,
+    }
 
     // oauthInfo : OAuthData;
     hiddenLayout;
@@ -133,13 +142,15 @@ export class TaiLieuComponent implements OnInit {
     searchRequest$: Subject<string> = new Subject<string>();
 
     // private OBSERVER_SEARCH_DATA = new Subject<string>();
+    param_mcv: string = '';
 
     constructor(
         private fileService: FileService,
         private helperService: HelperService,
         private notificationService: NotificationService,
         public dsCongViecService: DsCongViecService,
-
+        private auth: AuthService,
+        private activateRoute: ActivatedRoute,
     ) {
         // this.OBSERVER_SEARCH_DATA.asObservable().pipe(distinctUntilChanged(), debounceTime(500)).subscribe(() => this.loadData_2());
 
@@ -147,9 +158,17 @@ export class TaiLieuComponent implements OnInit {
 
     ngOnInit() {
         this.loadLibrary();
+        this.checkRole();
     }
 
+    checkRole() {
+        const isStaffExpert = this.auth.roles.reduce((collector, role) => collector || role['name'] === 'dans_lanh_dao', false);
+        this.permission.isExpert = isStaffExpert;
+        this.permission.canAdd = isStaffExpert;
+        this.permission.canEdit = isStaffExpert;
+        this.permission.canDelete = isStaffExpert;
 
+    }
 
     disableContextMenu(event: Event) {
         event.preventDefault();
@@ -252,7 +271,44 @@ export class TaiLieuComponent implements OnInit {
             next: blob => {
                 window.open(blob, '_blank',);
             },
-            error: () => {},
+            error: () => { },
+        });
+    }
+
+    myUploader() {
+        this.fileChooser.nativeElement.click();
+    }
+
+    fileChanges(event) {
+        if (event.target.files && event.target.files.length) {
+            this.fileService.uploadFiles(event.target.files, this.auth.userDonViId, this.auth.user.id).subscribe({
+                next: files => {
+                    const index = this.data_cv.findIndex(r => r.ma_congviec);
+                    const uploadedFiles: OvicFile[] = this.data_cv[index].file_congviec || [];
+                    const newFiles: OvicFile[] = [].concat(uploadedFiles, files);
+                    this.updateFileForJob(this.data_cv[index], newFiles);
+                    this.notificationService.isProcessing(true);
+                },
+                error: () => {
+                    this.notificationService.toastError("Thêm file thất bại");
+                }
+            });
+        }
+
+    }
+
+    updateFileForJob(job: DsCongViec, files: OvicFile[]) {
+        this.notificationService.isProcessing(true);
+        this.dsCongViecService.editDanhSach(job.id, { file_congviec: files }).subscribe({
+            next: () => {
+                job.file_congviec = files;
+                this.notificationService.isProcessing(false);
+                this.notificationService.toastSuccess('Cập nhật thành công');
+            },
+            error: () => {
+                this.notificationService.isProcessing(false);
+                this.notificationService.toastError('Cập nhật file thất bại');
+            },
         });
     }
 

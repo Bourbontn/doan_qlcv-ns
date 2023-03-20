@@ -4,10 +4,11 @@
     <div class="ml-auto">
       <span class="p-input-icon-right mr-2">
         <i class="pi pi-search"></i>
-        <input placeholder="Tìm kiếm yêu cầu" type="text" pInputText />
+        <input placeholder="Tìm kiếm công việc" type="text" pInputText [(ngModel)]="search"
+                    (ngModelChange)="searchData()" />
       </span>
-      <p-dropdown [options]="" placeholder="Lọc theo giao đoạn" [showClear]="true">
-      </p-dropdown>
+      <!-- <p-dropdown [options]="" placeholder="Lọc theo giao đoạn" [showClear]="true">
+      </p-dropdown> -->
     </div>
   </div>
   <!-- start table here -->

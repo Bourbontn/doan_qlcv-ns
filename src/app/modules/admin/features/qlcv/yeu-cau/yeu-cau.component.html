@@ -2,23 +2,23 @@
   <div class="row px-3">
     <h5 class="page-title intro-x mb-3"> Danh sách yêu cầu </h5>
     <div class="ml-auto">
-      <span class="p-input-icon-right mr-2">
+      <span class="p-input-icon-right ">
         <i class="pi pi-search"></i>
         <input placeholder="Tìm kiếm yêu cầu" type="text" pInputText [(ngModel)]="search"
           (ngModelChange)="searchData()" />
       </span>
-      <p-dropdown [options]="trangthai" (onChange)="filterRequset($event)" placeholder="Trạng thái" [showClear]="true">
-      </p-dropdown>
+      <!-- <p-dropdown [options]="trangthai" (onChange)="filterRequset($event)" placeholder="Trạng thái" [showClear]="true">
+      </p-dropdown> -->
     </div>
   </div>
-  <div class="row px-3">
+  <div class="row px-3 mt-2">
     <a class="p-2" (click)="btnAdd()"><i class="pi pi-plus"></i>
       Tạo mới yêu cầu</a>
     <!-- <button pButton pRipple class="h-2rem p-button-outlined" label="Tạo mới" styleClass="p-button-link"
         icon="pi pi-plus" (click)="btnAdd()"></button> -->
     <!-- <button *ngIf="!selectAll" pButton pRipple type="button" label="Phê duyệt tất cả"
       class="h-2rem mt-3 ml-2 p-button-success" icon="pi pi-check" iconPos="right"></button> -->
-    <div class="ml-auto my-2" *ngIf="permission.isExpert">
+    <div class="mb-2 ml-auto" *ngIf="permission.canAdd">
       <button [disabled]="dataSelection && dataSelection.length? false: true" pButton pRipple type="button"
         label="Phê duyệt" class="h-2rem  ml-2 p-button-success" icon="pi pi-check" iconPos="right"
         (click)="approve()"></button>
@@ -34,8 +34,8 @@
       styleClass="p-datatable-customers" [selectionPageOnly]="true" [rowHover]="true" [rows]="11" [paginator]="true">
       <ng-template pTemplate="header">
         <tr >
-          <th *ngIf="permission.isExpert" class="table_request" style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-          <th *ngIf="permission.isExpert" class="table_request" style="width: 3rem"></th>
+          <th *ngIf="permission.canAdd" class="table_request" style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+          <th *ngIf="permission.canAdd" class="table_request" style="width: 3rem"></th>
           <th class="table_request" pSortableColumn="tendexuat">Tên đề xuất </th>
           <th class="table_request" pSortableColumn="nguoidexuat">Người đề xuất </th>
           <th class="table_request" pSortableColumn="phongban">Phòng ban </th>
@@ -46,10 +46,10 @@
       </ng-template>
       <ng-template pTemplate="body" let-yeucau>
         <tr class="p-selectable-row">
-          <td *ngIf="permission.isExpert">
+          <td *ngIf="permission.canAdd">
             <p-tableCheckbox [value]="yeucau"></p-tableCheckbox>
           </td>
-          <td *ngIf="permission.isExpert">
+          <td *ngIf="permission.canAdd">
             <button pButton pRipple type="button" icon="pi pi-file-edit" (click)="btnEdit(yeucau)"
               class="p-button-rounded p-button-text p-button-plain"></button>
           </td>
